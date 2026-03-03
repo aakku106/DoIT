@@ -2,8 +2,10 @@ package db
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
+
+	"github.com/aakku106/DoIT/internal/store"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var DEBUG = true
@@ -13,6 +15,7 @@ func NewSQLite() (*sql.DB, error) {
 		log.Println("Initilizating DB: ")
 	}
 	db, err := sql.Open("sqlite3", "todo.db")
+	queries := store.New(db)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
