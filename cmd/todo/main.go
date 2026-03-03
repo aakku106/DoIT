@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	qry, err := db.NewSQLite()
+	dbConn, err := db.NewSQLite()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("qry: %v\n", qry)
+	defer dbConn.Close()
+	log.Println("DB opened")
 }
