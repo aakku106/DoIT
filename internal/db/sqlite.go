@@ -31,4 +31,3 @@ func NewSQLite() (*sql.DB, error) {
 
 	return db, nil
 }
-
