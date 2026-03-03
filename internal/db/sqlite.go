@@ -8,11 +8,11 @@ import (
 
 var DEBUG = true
 
-func NewSQLite(path string) (*sql.DB, error) {
+func NewSQLite() (*sql.DB, error) {
 	if DEBUG {
-		log.Println("Initilizating DB: ", path)
+		log.Println("Initilizating DB: ")
 	}
-	db, err := sql.Open("sqlite3", path)
+	db, err := sql.Open("sqlite3", "todo.db")
 	if err != nil {
 		log.Fatal(err)
 		return nil, err

@@ -1,4 +1,3 @@
--- name: CreateTotosTable
 CREATE TABLE IF NOT EXISTS todos (
     id INTEGER PRIMARY KEY,
     session TEXT NOT NULL DEFAULT 'todo',
