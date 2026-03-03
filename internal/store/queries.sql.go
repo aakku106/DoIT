@@ -10,23 +10,41 @@ import (
 	"database/sql"
 )
 
-const createTodo = `-- name: CreateTodo :exec
-INSERT INTO todos (
-    session,
-    title,
-    expires_at
-) VALUES (?, ?, ?)
+const completeTodo = `-- name: CompleteTodo :exec
+UPDATE todos
+SET completed = 1
+WHERE id = ?
+`
+
+func (q *Queries) CompleteTodo(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, completeTodo, id)
+	return err
+}
+
+const createTodo = `-- name: CreateTodo :one
+INSERT INTO todos (title, session, expires_at)
+VALUES (?, ?, ?)
+RETURNING id, session, title, created_at, expires_at, completed
 `
 
 type CreateTodoParams struct {
-	Session   string       `json:"session"`
 	Title     string       `json:"title"`
+	Session   string       `json:"session"`
 	ExpiresAt sql.NullTime `json:"expires_at"`
 }
 
-func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) error {
-	_, err := q.db.ExecContext(ctx, createTodo, arg.Session, arg.Title, arg.ExpiresAt)
-	return err
+func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error) {
+	row := q.db.QueryRowContext(ctx, createTodo, arg.Title, arg.Session, arg.ExpiresAt)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.Session,
+		&i.Title,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.Completed,
+	)
+	return i, err
 }
 
 const deleteTodo = `-- name: DeleteTodo :exec
@@ -42,7 +60,7 @@ func (q *Queries) DeleteTodo(ctx context.Context, id int64) error {
 const listTodos = `-- name: ListTodos :many
 SELECT id, session, title, created_at, expires_at, completed FROM todos
 WHERE session = ?
-ORDER BY created_at
+ORDER BY created_at DESC
 `
 
 func (q *Queries) ListTodos(ctx context.Context, session string) ([]Todo, error) {
