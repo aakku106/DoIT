@@ -1,7 +1,19 @@
 package main
 
-import "github.com/aakku106/DoIT/internal/db"
+import (
+	"log"
+
+	"github.com/aakku106/DoIT/internal/db"
+)
+
+var DEBUG = true
 
 func main() {
-	db.NewSQLite()
+	if DEBUG {
+		log.Println("Starting Program ...")
+	}
+	db.NewSQLite("./testi.db")
+	if DEBUG {
+		log.Println("XXXXXXXXXXX---------ENDING  Program ------XXXXXXXXXXXXX")
+	}
 }
