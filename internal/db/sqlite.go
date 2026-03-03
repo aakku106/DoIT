@@ -2,11 +2,9 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
-
 	"github.com/aakku106/DoIT/internal/store"
 	_ "github.com/mattn/go-sqlite3"
+	"log"
 )
 
 func NewSQLite() (*sql.DB, error) {
@@ -19,6 +17,6 @@ func NewSQLite() (*sql.DB, error) {
 	}
 	defer db.Close()
 	queries := store.New(db)
-	fmt.Printf("queries: %v\n", queries)
+	log.Printf("queries: %v\n", queries)
 	return db, nil
 }
