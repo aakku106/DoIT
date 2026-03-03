@@ -29,4 +29,4 @@ func NewSQLite(path string) (*sql.DB, error) {
 }
 
 // I have no idea how to run migration till date
-func RunMigrations(db *sql.DB) error {}
+// func RunMigrations(db *sql.DB) error {}
