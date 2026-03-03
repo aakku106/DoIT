@@ -15,4 +15,4 @@ WHERE id = ?;
 
 -- name: DeleteTodo :exec
 DELETE FROM todos
-WHERE id = ?;E id = ?;
+WHERE id = ?;
