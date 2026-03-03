@@ -15,13 +15,18 @@ func NewSQLite(path string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 	defer db.Close()
 	if DEBUG {
 		log.Println("DB initilized")
+		return nil, err
 	}
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
-	return db, err
+	return db, nil
 }
+
+// I have no idea how to run migration till date
+func RunMigrations(db *sql.DB) error {}
