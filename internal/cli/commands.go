@@ -9,5 +9,8 @@ import (
 func AddTodo(q *store.Queries, title string) {
 	fmt.Println("Add called got:", q, title)
 }
-func ListTodos(q *store.Queries)              {}
+func ListTodos(q *store.Queries)              {
+	fmt.Println("Listing TODO:")
+	q.ListTodos()
+}
 func CompleteTodo(q *store.Queries, id int64) {}

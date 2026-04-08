@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/aakku106/DoIT/internal/cli"
 	"github.com/aakku106/DoIT/internal/db"
 	"github.com/aakku106/DoIT/internal/store"
-	"log"
-	"os"
 )
 
 func main() {
