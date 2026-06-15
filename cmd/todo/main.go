@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	call "github.com/aakku106/DoIT/internal/cli"
 )
@@ -21,7 +20,7 @@ func main() {
 
 	case "list":
 		fmt.Println("Listing data of todo")
-		list(args)
+		list()
 
 	case "done":
 		fmt.Println(args[2], "task completed")
@@ -50,9 +49,11 @@ func main() {
 }
 
 func add(args []string) {
-	call.AddTodo(args[2], time.Now().UTC())
+	call.AddTodo(args[2])
 }
-func list(args []string) {}
+func list() {
+	call.ListTodos()
+}
 func done(args []string) {}
 func remove(args []string) {
 	fmt.Println("***---Are you sure You want To remove: ", args[2])
