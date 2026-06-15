@@ -3,13 +3,16 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
+
+	call "github.com/aakku106/DoIT/internal/cli"
 )
 
 func main() {
 	args := os.Args
 	switch args[1] {
 	case "add":
-		fmt.Println("Adding entry to todo")
+		fmt.Println("Adding")
 		if len(args) < 3 {
 			fmt.Println("Specify what to add !")
 			os.Exit(1)
@@ -47,12 +50,12 @@ func main() {
 }
 
 func add(args []string) {
-
+	call.AddTodo(args[2], time.Now().UTC())
 }
-func list(args []string)
-func done(args []string)
+func list(args []string) {}
+func done(args []string) {}
 func remove(args []string) {
 	fmt.Println("***---Are you sure You want To remove: ", args[2])
 }
 
-func sessionCall(args []string)
+func sessionCall(args []string) {}

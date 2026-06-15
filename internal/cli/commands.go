@@ -2,15 +2,18 @@ package cli
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aakku106/DoIT/internal/store"
 )
 
-func AddTodo(q *store.Queries, title string) {
-	fmt.Println("Add called got:", q, title)
+func AddTodo(title string, time time.Time) {
+	fmt.Printf("%s in", time)
+	fmt.Println("Called on", time)
+	fmt.Println("Local: ", time.Local())
 }
-func ListTodos(q *store.Queries)              {
+func ListTodos(q *store.Queries) {
 	fmt.Println("Listing TODO:")
-	q.ListTodos()
 }
-func CompleteTodo(q *store.Queries, id int64) {}
+func DoneTodo(q *store.Queries, id int64) {}
+func RemoveTodo()                         {}
