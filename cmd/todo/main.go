@@ -5,12 +5,10 @@ import (
 	"os"
 
 	call "github.com/aakku106/DoIT/internal/cli"
-	create "github.com/aakku106/DoIT/internal/db"
 )
 
 func main() {
 	args := os.Args
-	create.NewSQLite()
 	switch args[1] {
 	case "add":
 		if len(args) < 3 {
