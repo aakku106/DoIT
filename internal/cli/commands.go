@@ -5,7 +5,7 @@ import (
 	"github.com/aakku106/DoIT/internal/store"
 )
 
-func AddTodo(title string) {
+func AddTodo(query *store.Queries, title string) {
 	fmt.Printf("\t%s\n", title)
 
 }
