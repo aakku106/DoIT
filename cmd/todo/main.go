@@ -11,11 +11,11 @@ func main() {
 	args := os.Args
 	switch args[1] {
 	case "add":
-		fmt.Println("Adding")
 		if len(args) < 3 {
 			fmt.Println("Specify what to add !")
 			os.Exit(1)
 		}
+		fmt.Print("Adding:")
 		add(args)
 
 	case "list":

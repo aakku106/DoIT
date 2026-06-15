@@ -6,7 +6,7 @@ import (
 )
 
 func AddTodo(title string) {
-	fmt.Printf("%s in", title)
+	fmt.Printf("\t%s\n", title)
 
 }
 func ListTodos() {
