@@ -23,7 +23,7 @@ func main() {
 	switch args[1] {
 	case "add":
 		if len(args) < 3 {
-			fmt.Println("Specify what to add !")
+			fmt.Println(call.Cyan, "Specify what to add !", call.Reset)
 			os.Exit(1)
 		}
 		fmt.Print("Adding:")
@@ -39,18 +39,18 @@ func main() {
 	case "done":
 		fmt.Println(args[2], "task completed")
 		if len(args) < 3 {
-			fmt.Println("Specify what have you done ?")
+			fmt.Println(call.Cyan, "Specify what have you done ?", call.Reset)
 			os.Exit(1)
 		}
 
 	case "remove":
 		if len(args) < 3 {
-			fmt.Println("Specify what to Remove ?")
+			fmt.Println(call.Cyan, "Specify what to Remove ?", call.Reset)
 			os.Exit(1)
 		}
 
-		fmt.Println("***---Are you sure You want To remove: ", args[2])
-		fmt.Println("Removing: ", args[3])
+		fmt.Println("---Are you sure You want To remove:", call.Red, args[2], call.Reset)
+		fmt.Println("Removing: ", call.Bold, call.Red, args[2], call.Reset)
 
 	default:
 		fmt.Println("Session call")
