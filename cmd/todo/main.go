@@ -31,6 +31,9 @@ func main() {
 
 	case "list":
 		fmt.Println("Listing data of todo")
+		if len(args) == 2 {
+
+		}
 
 	case "done":
 		fmt.Println(args[2], "task completed")
