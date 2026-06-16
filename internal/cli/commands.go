@@ -25,8 +25,19 @@ func AddTodo(query *store.Queries, title string) {
 	fmt.Println("ToDo Task:\t", added.Title)
 	fmt.Println("Created At:\t", added.CreatedAt.Local())
 }
-func ListTodos() {
-	fmt.Println("Listing TODO:")
+func ListTodos(q *store.Queries) {
+	list, err := q.ListTodos(context.Background(), "todo")
+	if err != nil {
+		log.Fatalln("Error while listing todo data from DB: ", err)
+	}
+	if list == nil {
+		fmt.Println("You are all done !!")
+	} else {
+		for i, v := range list {
+			fmt.Printf("\n\t%d.\t%s\n", i, v.Title)
+		}
+	}
+
 }
 func DoneTodo(q *store.Queries, id int64) {}
 func RemoveTodo()                         {}

@@ -6,12 +6,15 @@ This is a Go CLI todo app using:
 
 - SQLite for storage
 - sqlc for generating typed Go query code from SQL files
+- the app currently lives on the `FeatureAddToTodo` branch
 
 The app is intended to run commands like:
 
 - `todo add "task title"`
 - `todo list`
 - `todo done 3`
+- `todo remove 3`
+- a fallback/session-style path from `main.go` for anything else
 
 ## Main architecture
 
@@ -32,6 +35,14 @@ Dependency chain:
   - `sql/queries.sql`
   - configured by `sqlc.yml`
 
+Current command routing in `main.go`:
+
+- `add` checks for a title argument and then calls `AddTodo`
+- `list` only prints a message right now
+- `done` only prints the id and checks for missing args after that print
+- `remove` checks for a target and prints the remove message
+- anything else falls into `sessionCall(args)`
+
 ## File-by-file purpose
 
 ### Entrypoint and command routing
@@ -39,7 +50,8 @@ Dependency chain:
 - `cmd/todo/main.go`
   - Starts DB connection.
   - Creates `store.Queries` with `store.New(dbConn)`.
-  - Routes CLI args (`add`, `list`, `done`) to functions in `internal/cli`.
+  - Routes CLI args (`add`, `list`, `done`, `remove`) to functions in `internal/cli` or local handlers.
+  - Has a placeholder `sessionCall(args []string)` function that does nothing yet.
 
 ### DB bootstrap
 
@@ -51,9 +63,10 @@ Dependency chain:
 ### CLI handlers
 
 - `internal/cli/commands.go`
-  - Intended place for business/command logic.
-  - Should call generated store methods (`CreateTodo`, `ListTodos`, `CompleteTodo`).
-  - Currently incomplete/partially stubbed.
+  - `AddTodo` is implemented and creates a todo in SQLite.
+  - `ListTodos` is currently just a print stub.
+  - `DoneTodo` and `RemoveTodo` are currently empty stubs.
+  - This is still the place where command logic should eventually call generated store methods like `CreateTodo`, `ListTodos`, `CompleteTodo`, and `DeleteTodo`.
 
 ### Generated SQL access layer (sqlc output)
 
@@ -69,6 +82,7 @@ Dependency chain:
     - `ListTodos(ctx, session)`
     - `CompleteTodo(ctx, id)`
     - `DeleteTodo(ctx, id)`
+  - `ListTodos` filters by `session`, so the caller must provide a session string even if the app only uses the default `todo` session.
 
 ### SQL definitions (source of truth for sqlc)
 
@@ -76,6 +90,10 @@ Dependency chain:
   - Defines `todos` table schema.
 - `sql/queries.sql`
   - Defines named queries used by sqlc.
+  - `CreateTodo` returns the inserted row.
+  - `ListTodos` selects all todo columns for one session.
+  - `CompleteTodo` marks `completed = 1`.
+  - `DeleteTodo` removes a row by id.
 
 ### Migration files
 
@@ -89,6 +107,12 @@ Dependency chain:
   - Contains a `Service` struct with `store *store.Queries`.
   - Not yet used by entrypoint/CLI.
 
+### Runtime DB file
+
+- `cmd/todo/todo.db`
+  - SQLite database file created by the app when it runs.
+  - This is the actual local data store for todo records.
+
 ### Experimental folders (not main runtime)
 
 - `internal/tempTest/sqlc-tutorial/...`
@@ -99,24 +123,23 @@ Dependency chain:
 
 1. `add` route passes wrong argument in `main.go`
 
-- Current code passes `args[1]` (the word `add`) as title.
-- Should pass title text from the next arg(s).
+- This was the old issue; the current branch now passes `args[2]` into `AddTodo`.
+- The remaining risk is that there is still no shared helper for parsing or validating all command args consistently.
 
 1. `done` route has type mismatch in `main.go`
 
-- `args[2]` is string.
-- `CompleteTodo` currently expects `int64`.
-- Needs parsing (e.g., `strconv.ParseInt`).
+- `main.go` now only prints the id for `done` and does not yet call the store.
+- The command still needs real parsing and a call to `DoneTodo`/`CompleteTodo`.
 
 1. `ListTodos` call signature mismatch in `commands.go`
 
-- Generated method requires `(context.Context, session string)`.
-- Current call has no arguments.
+- `ListTodos` is now a stub with no store call at all.
+- The generated method still requires `(context.Context, session string)`.
 
 1. CLI handlers are stubs/incomplete
 
-- `AddTodo` mostly prints debug output.
-- `CompleteTodo` is empty.
+- `AddTodo` is now implemented and writes to the DB.
+- `ListTodos`, `DoneTodo`, and `RemoveTodo` are still incomplete.
 
 1. Multiple schema sources
 
@@ -124,6 +147,7 @@ Dependency chain:
 - Schema in `sql/schema.sql`.
 - Migration in `migrations/001_init.sql`.
 - This works short-term but creates maintenance confusion.
+- `cmd/todo/todo.db` is the live local database file.
 
 ## How sqlc fits in
 
@@ -141,6 +165,12 @@ Rule of thumb:
 - Regenerate code.
 - Do not hand-edit generated files in `internal/store`.
 
+One important detail in the generated API:
+
+- `CreateTodo` takes a `CreateTodoParams` struct with `Title`, `Session`, and `ExpiresAt`.
+- `ListTodos` always needs a `session` string.
+- `CompleteTodo` and `DeleteTodo` both take an `id`.
+
 ## Suggested stabilization order (small, practical)
 
 1. Fix arg parsing in `cmd/todo/main.go`.
@@ -148,6 +178,7 @@ Rule of thumb:
 3. Choose one schema strategy (migrations or inline create) to reduce duplication.
 4. Keep `internal/tempTest` as archive or move outside `internal` to reduce confusion.
 5. Add usage/help output for invalid/missing args.
+6. Connect `remove` and `sessionCall` to real behavior or remove them if they are no longer part of the design.
 
 ## Quick mental model
 
@@ -158,3 +189,10 @@ Use this map when you return later:
 - DB query API -> `internal/store/queries.sql.go` (generated)
 - SQL truth -> `sql/queries.sql`, `sql/schema.sql`
 - DB connection/init -> `internal/db/sqlite.go`
+
+## Fast summary of the current state
+
+- The app now successfully creates todos through `AddTodo`.
+- The list, done, and remove paths are still mostly placeholders.
+- The generated sqlc layer is in place and points at the real SQL files.
+- The project still has duplicated schema setup, which is the main source of confusion on reload.
