@@ -30,8 +30,9 @@ func main() {
 		call.AddTodo(query, args[2])
 
 	case "list":
-		fmt.Println("Listing data of todo")
+		fmt.Print("\033[H\033[2J")
 		if len(args) == 2 {
+			fmt.Println("Listing data from 'todo'")
 			call.ListTodos(query)
 		}
 
