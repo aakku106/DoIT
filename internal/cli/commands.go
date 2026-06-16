@@ -21,9 +21,9 @@ func AddTodo(query *store.Queries, title string) {
 		log.Fatalln("Error while adding to DB: ", err)
 	}
 	fmt.Println("Succesfully Added ToDo")
-	fmt.Println("ID:\t", added.ID)
-	fmt.Println("ToDo Task:\t", added.Title)
-	fmt.Println("Created At:\t", added.CreatedAt.Local())
+	fmt.Println("ID:\t\t", Bold, Green, added.ID, Reset)
+	fmt.Println("ToDo Task:\t", Bold, Green, added.Title, Reset)
+	fmt.Println("Created At:\t", Green, added.CreatedAt.Local(), Reset)
 }
 func ListTodos(q *store.Queries) {
 	list, err := q.ListTodos(context.Background(), "todo")
@@ -34,10 +34,21 @@ func ListTodos(q *store.Queries) {
 		fmt.Println("You are all done !!")
 	} else {
 		for i, v := range list {
-			fmt.Printf("\n\t%d.\t%s\n", i, v.Title)
+			fmt.Printf("%s\n\t%d.%s", Dim, i, Reset)
+			fmt.Printf("%s%s\t%s\n%s", Bold, Green, v.Title, Reset)
 		}
 	}
 
 }
 func DoneTodo(q *store.Queries, id int64) {}
-func RemoveTodo()                         {}
+func RemoveTodo(q *store.Queries, id int) {
+	dbId, err := q.ListTodoIDs(context.Background(), "todo")
+	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+	for i, v := range dbId {
+		if i == id {
+			q.DeleteTodo(context.Background(), v)
+		}
+	}
+}
