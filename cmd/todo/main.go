@@ -57,9 +57,9 @@ func main() {
 		if unicode.ToLower(a) == 'n' {
 			os.Exit(0)
 		} else {
-			id, err := strconv.ParseInt(args[2], 10, 64)
-			if err != nil {
-				fmt.Println(call.Red, call.Bold, "Enter valid number", err, call.Reset)
+			id, err := strconv.Atoi(args[2])
+			if err != nil || id < 0 {
+				fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset)
 			}
 			fmt.Println("Removing: ", call.Bold, call.Red, id, call.Reset)
 			call.RemoveTodo(query, id)

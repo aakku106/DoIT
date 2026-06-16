@@ -41,6 +41,14 @@ func ListTodos(q *store.Queries) {
 
 }
 func DoneTodo(q *store.Queries, id int64) {}
-func RemoveTodo(q *store.Queries, id int64) {
-	q.DeleteTodo(context.Background(), id)
+func RemoveTodo(q *store.Queries, id int) {
+	dbId, err := q.ListTodoIDs(context.Background(), "todo")
+	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+	for i, v := range dbId {
+		if i == id {
+			q.DeleteTodo(context.Background(), v)
+		}
+	}
 }
