@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"unicode"
 
 	call "github.com/aakku106/DoIT/internal/cli"
 	create "github.com/aakku106/DoIT/internal/db"
@@ -45,12 +47,23 @@ func main() {
 
 	case "remove":
 		if len(args) < 3 {
-			fmt.Println(call.Cyan, "Specify what to Remove ?", call.Reset)
+			fmt.Println(call.Cyan, "Specify what to Remove ?'provide task Id <use doit list>'", call.Reset)
 			os.Exit(1)
 		}
 
-		fmt.Println("---Are you sure You want To remove:", call.Red, args[2], call.Reset)
-		fmt.Println("Removing: ", call.Bold, call.Red, args[2], call.Reset)
+		fmt.Println("---Are you sure You want To remove:", call.Red, args[2], call.Reset, "Y/N")
+		var a rune
+		fmt.Scanf("%c", &a)
+		if unicode.ToLower(a) == 'n' {
+			os.Exit(0)
+		} else {
+			id, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				fmt.Println(call.Red, call.Bold, "Enter valid number", err, call.Reset)
+			}
+			fmt.Println("Removing: ", call.Bold, call.Red, id, call.Reset)
+			call.RemoveTodo(query, id)
+		}
 
 	default:
 		fmt.Println("Session call")

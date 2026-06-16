@@ -41,4 +41,6 @@ func ListTodos(q *store.Queries) {
 
 }
 func DoneTodo(q *store.Queries, id int64) {}
-func RemoveTodo()                         {}
+func RemoveTodo(q *store.Queries, id int64) {
+	q.DeleteTodo(context.Background(), id)
+}
