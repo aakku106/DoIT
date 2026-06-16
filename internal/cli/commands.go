@@ -34,7 +34,7 @@ func ListTodos(q *store.Queries) {
 		fmt.Println("You are all done !!")
 	} else {
 		for i, v := range list {
-			fmt.Printf("%d.\t%s\n", i, v.Title)
+			fmt.Printf("\n\t%d.\t%s\n", i, v.Title)
 		}
 	}
 
