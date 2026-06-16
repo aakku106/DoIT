@@ -32,7 +32,7 @@ func main() {
 	case "list":
 		fmt.Println("Listing data of todo")
 		if len(args) == 2 {
-
+			call.ListTodos(query)
 		}
 
 	case "done":
