@@ -49,5 +49,8 @@ func RemoveTodo(q *store.Queries, id int) {
 	if len(dbId) < id {
 		log.Fatalln(Red, "Provide correct id <use: doit list>", Reset)
 	}
-	q.DeleteTodo(context.Background(), dbId[id])
+	err = q.DeleteTodo(context.Background(), dbId[id])
+	if err != nil {
+		log.Fatalln(Red, "Error while deleting: ", err, Reset)
+	}
 }
