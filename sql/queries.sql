@@ -8,6 +8,11 @@ SELECT * FROM todos
 WHERE session = ?
 ORDER BY created_at DESC;
 
+-- name: ListTodoIDs :many
+SELECT id FROM todos
+WHERE session = ?
+ORDER BY created_at DESC;
+
 -- name: CompleteTodo :exec
 UPDATE todos
 SET completed = 1
