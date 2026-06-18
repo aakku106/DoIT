@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./cmd/todo/main.go
+    env:
+      - CGO_ENABLED=0           # Ensures fully static, dependency-free binaries
+    
+    # Target every major and niche Operating System
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
+      - openbsd
+      - netbsd
+      - dragonfly
+      - illumos
+      - solaris
+      - js                  # For WebAssembly execution
+    
+    # Target every architecture Go supports
+    goarch:
+      - amd64               # 64-bit Intel/AMD
+      - arm64               # 64-bit ARM (M1/M2/M3, mobile, modern servers)
+      - "386"               # 32-bit legacy Intel/AMD
+      - arm                 # 32-bit ARM (Raspberry Pi older models)
+      - mips
+      - mipsle
+      - mips64
+      - mips64le
+      - riscv64             # Modern open-source hardware
+      - s390x               # IBM Mainframes
+      - ppc64le             # PowerPC Big Endian
+      - wasm                # Paired with 'js' OS for the browser
+
+    # Exclude combinations that don't logically exist in the Go compiler matrix
+    exclude:
+      - goos: darwin
+        goarch: "386"
+      - goos: darwin
+        goarch: arm
+      - goos: darwin
+        goarch: riscv64
+      - goos: windows
+        goarch: riscv64
+      - goos: js
+        goarch: amd64
+      - goos: js
+        goarch: arm64
+      - goos: js
+        goarch: "386"
+    
+    # Keep our optimizations fully active for all platforms
+    ldflags:
+      - -s -w
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  footer: >-
+
+    ---
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser)..
