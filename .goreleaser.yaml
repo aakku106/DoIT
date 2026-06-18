@@ -40,8 +40,8 @@ builds:
       - ppc64le             # PowerPC Big Endian
       - wasm                # Paired with 'js' OS for the browser
 
-    # Exclude combinations that don't logically exist in the Go compiler matrix
-    exclude:
+    # Fixed: GoReleaser uses "ignore" to skip combinations that do not exist
+    ignore:
       - goos: darwin
         goarch: "386"
       - goos: darwin
@@ -83,4 +83,4 @@ release:
   footer: >-
 
     ---
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser)..
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
