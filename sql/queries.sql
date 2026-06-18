@@ -4,8 +4,8 @@ VALUES (?, ?, ?)
 RETURNING *;
 
 -- name: ListTodos :many
-SELECT * FROM todos
-WHERE session = ?
+SELECT id, title FROM todos
+WHERE session = ? AND completed = 0
 ORDER BY created_at DESC;
 
 -- name: ListTodoIDs :many
