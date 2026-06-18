@@ -56,7 +56,7 @@ func main() {
 		fmt.Scanf("%c", &a)
 		if unicode.ToLower(a) == 'n' {
 			os.Exit(0)
-		} else {
+		} else { // we do need this else, cause lest say if user gave "wotver except N/n" it will still delete args[2] id from db
 			id, err := strconv.Atoi(args[2])
 			if err != nil || id < 0 {
 				fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset)
