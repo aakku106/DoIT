@@ -87,28 +87,26 @@ func (q *Queries) ListTodoIDs(ctx context.Context, session string) ([]int64, err
 }
 
 const listTodos = `-- name: ListTodos :many
-SELECT id, session, title, created_at, expires_at, completed FROM todos
-WHERE session = ?
+SELECT id, title FROM todos
+WHERE session = ? AND completed = 0
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListTodos(ctx context.Context, session string) ([]Todo, error) {
+type ListTodosRow struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+func (q *Queries) ListTodos(ctx context.Context, session string) ([]ListTodosRow, error) {
 	rows, err := q.db.QueryContext(ctx, listTodos, session)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Todo
+	var items []ListTodosRow
 	for rows.Next() {
-		var i Todo
-		if err := rows.Scan(
-			&i.ID,
-			&i.Session,
-			&i.Title,
-			&i.CreatedAt,
-			&i.ExpiresAt,
-			&i.Completed,
-		); err != nil {
+		var i ListTodosRow
+		if err := rows.Scan(&i.ID, &i.Title); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
