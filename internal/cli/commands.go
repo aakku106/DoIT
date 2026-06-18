@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/aakku106/DoIT/internal/store"
 )
@@ -46,11 +47,18 @@ func RemoveTodo(q *store.Queries, id int) {
 	if err != nil {
 		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
 	}
+
 	if len(dbId) < id {
 		log.Fatalln(Red, "Provide correct id <use: doit list>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
 	}
+
 	err = q.DeleteTodo(context.Background(), dbId[id])
 	if err != nil {
 		log.Fatalln(Red, "Error while deleting: ", err, Reset)
 	}
+
+	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
 }

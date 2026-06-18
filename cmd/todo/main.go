@@ -61,7 +61,7 @@ func main() {
 			if err != nil || id < 0 {
 				fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset)
 			}
-			fmt.Println("Removing: ", call.Bold, call.Red, id, call.Reset)
+			fmt.Println("Trying to Remove: ", call.Bold, call.Red, id, call.Reset)
 			call.RemoveTodo(query, id)
 		}
 
