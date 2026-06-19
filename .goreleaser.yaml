@@ -77,6 +77,16 @@ changelog:
       - "^test:"
       - "^chore:"
 
+brews:
+  - repository:
+      owner: aakku106
+      name: homebrew-tap
+    directory: Formula
+    homepage: "https://adarashagaihre.com.np"
+    description: "A sleek CLI todo manager built in Go & WASM SQlite 3."
+    install: |
+      bin.install "doit"
+
 release:
   footer: >-
 
