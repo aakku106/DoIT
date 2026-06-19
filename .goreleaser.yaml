@@ -8,11 +8,12 @@ before:
     - go mod tidy
 
 builds:
-  - main: ./cmd/todo/main.go
+  - id: doit
+    binary: doit
+    main: ./cmd/todo/main.go
     env:
-      - CGO_ENABLED=0           # Ensures fully static, dependency-free binaries
+      - CGO_ENABLED=0
     
-    # Target every major and niche Operating System
     goos:
       - linux
       - windows
@@ -23,24 +24,22 @@ builds:
       - dragonfly
       - illumos
       - solaris
-      - js                  # For WebAssembly execution
+      - js
     
-    # Target every architecture Go supports
     goarch:
-      - amd64               # 64-bit Intel/AMD
-      - arm64               # 64-bit ARM (M1/M2/M3, mobile, modern servers)
-      - "386"               # 32-bit legacy Intel/AMD
-      - arm                 # 32-bit ARM (Raspberry Pi older models)
+      - amd64
+      - arm64
+      - "386"
+      - arm
       - mips
       - mipsle
       - mips64
       - mips64le
-      - riscv64             # Modern open-source hardware
-      - s390x               # IBM Mainframes
-      - ppc64le             # PowerPC Big Endian
-      - wasm                # Paired with 'js' OS for the browser
+      - riscv64
+      - s390x
+      - ppc64le
+      - wasm
 
-    # Fixed: GoReleaser uses "ignore" to skip combinations that do not exist
     ignore:
       - goos: darwin
         goarch: "386"
@@ -57,14 +56,13 @@ builds:
       - goos: js
         goarch: "386"
     
-    # Keep our optimizations fully active for all platforms
     ldflags:
       - -s -w
 
 archives:
   - formats: [tar.gz]
     name_template: >-
-      {{ .ProjectName }}_
+      doit_
       {{- title .Os }}_
       {{- .Arch }}
     format_overrides:
@@ -79,8 +77,25 @@ changelog:
       - "^test:"
       - "^chore:"
 
+brews:
+  - repository:
+      owner: aakku106
+      name: homebrew-tap
+    directory: Formula
+    homepage: "https://adarashagaihre.com.np"
+    description: "A sleek CLI todo manager built in Go & WASM SQlite 3."
+    install: |
+      bin.install "doit"
+
 release:
   footer: >-
 
     ---
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+    
+    ### Contact & Links
+    
+    * **Built by:** [@aakku106](https://github.com/aakku106)
+    
+    * **Website:** [adarashagaihre.com.np](https://adarashagaihre.com.np)
+    
+    * **Support Email:** aakku@adarashagaihre.com.np | adarasha.gaihre106@gmail.com
