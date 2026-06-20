@@ -5,7 +5,7 @@ RETURNING *;
 
 -- name: ListTodos :many
 SELECT id, title FROM todos
-WHERE todos.session = ? AND completed = 0
+WHERE todos.session = ?
 ORDER BY created_at DESC;
 
 -- name: ListTodoIDs :many
