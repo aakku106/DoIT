@@ -3,6 +3,27 @@ CREATE TABLE IF NOT EXISTS todos (
     session TEXT NOT NULL DEFAULT 'todo',
     title TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at DATETIME,
-    completed INTEGER NOT NULL DEFAULT 0 CHECK (completed IN (0,1))
+    expires_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS completed (
+    id INTEGER PRIMARY KEY,
+    session TEXT NOT NULL DEFAULT 'todo',
+    title TEXT NOT NULL,
+    completed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ignored (
+    id INTEGER PRIMARY KEY,
+    session TEXT NOT NULL DEFAULT 'todo',
+    title TEXT NOT NULL,
+    expires_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS trash (
+    id INTEGER PRIMARY KEY,
+    session TEXT NOT NULL DEFAULT 'todo',
+    title TEXT NOT NULL,
+    created_at DATETIME NOT NULL,
+    removed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
