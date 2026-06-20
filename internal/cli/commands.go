@@ -54,7 +54,11 @@ func DoneTodo(q *store.Queries, id int) {
 		os.Exit(0)
 	}
 
-	err = q.CompleteTodo(context.Background(), dbId[id])
+	err = q.CompleteTodoTransaction(context.Background(), dbId[id])
+	if err != nil {
+		log.Fatalln(Red, "Error while deleting: ", err, Reset)
+	}
+	err = q.DeleteFromTodos(context.Background(), dbId[id])
 	if err != nil {
 		log.Fatalln(Red, "Error while deleting: ", err, Reset)
 	}
