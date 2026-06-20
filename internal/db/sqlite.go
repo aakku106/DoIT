@@ -2,6 +2,8 @@ package db
 
 import (
 	"database/sql"
+
+	schema "github.com/aakku106/DoIT/sql"
 	_ "github.com/ncruces/go-sqlite3/driver"
 )
 
@@ -15,16 +17,7 @@ func NewSQLite() (*sql.DB, error) {
 		return nil, err
 	}
 
-	schema := `
-	CREATE TABLE IF NOT EXISTS todos (
-		id INTEGER PRIMARY KEY,
-		session TEXT NOT NULL DEFAULT 'todo',
-		title TEXT NOT NULL,
-		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		expires_at DATETIME
-	);`
-
-	if _, err := db.Exec(schema); err != nil {
+	if _, err := db.Exec(schema.SchemaSQLite); err != nil {
 		return nil, err
 	}
 
