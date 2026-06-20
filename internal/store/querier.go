@@ -9,11 +9,12 @@ import (
 )
 
 type Querier interface {
-	CompleteTodo(ctx context.Context, id int64) error
+	CompleteTodoTransaction(ctx context.Context, id int64) error
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
-	DeleteTodo(ctx context.Context, id int64) error
+	DeleteFromTodos(ctx context.Context, id int64) error
 	ListTodoIDs(ctx context.Context, session string) ([]int64, error)
 	ListTodos(ctx context.Context, session string) ([]ListTodosRow, error)
+	TrashTodoTransaction(ctx context.Context, id int64) error
 }
 
 var _ Querier = (*Queries)(nil)

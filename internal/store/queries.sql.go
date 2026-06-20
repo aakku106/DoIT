@@ -10,21 +10,21 @@ import (
 	"database/sql"
 )
 
-const completeTodo = `-- name: CompleteTodo :exec
-UPDATE todos
-SET completed = 1
-WHERE id = ?
+const completeTodoTransaction = `-- name: CompleteTodoTransaction :exec
+INSERT INTO completed (session, title)
+SELECT t.session, t.title FROM todos AS t
+WHERE t.id = ?
 `
 
-func (q *Queries) CompleteTodo(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, completeTodo, id)
+func (q *Queries) CompleteTodoTransaction(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, completeTodoTransaction, id)
 	return err
 }
 
 const createTodo = `-- name: CreateTodo :one
 INSERT INTO todos (title, session, expires_at)
 VALUES (?, ?, ?)
-RETURNING id, session, title, created_at, expires_at, completed
+RETURNING id, session, title, created_at, expires_at
 `
 
 type CreateTodoParams struct {
@@ -42,25 +42,24 @@ func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, e
 		&i.Title,
 		&i.CreatedAt,
 		&i.ExpiresAt,
-		&i.Completed,
 	)
 	return i, err
 }
 
-const deleteTodo = `-- name: DeleteTodo :exec
-DELETE FROM todos
-WHERE id = ?
+const deleteFromTodos = `-- name: DeleteFromTodos :exec
+DELETE FROM todos 
+WHERE todos.id = ?
 `
 
-func (q *Queries) DeleteTodo(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteTodo, id)
+func (q *Queries) DeleteFromTodos(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromTodos, id)
 	return err
 }
 
 const listTodoIDs = `-- name: ListTodoIDs :many
-SELECT id FROM todos
-WHERE session = ?
-ORDER BY created_at DESC
+SELECT t.id FROM todos AS t
+WHERE t.session = ?
+ORDER BY t.created_at DESC
 `
 
 func (q *Queries) ListTodoIDs(ctx context.Context, session string) ([]int64, error) {
@@ -87,9 +86,9 @@ func (q *Queries) ListTodoIDs(ctx context.Context, session string) ([]int64, err
 }
 
 const listTodos = `-- name: ListTodos :many
-SELECT id, title FROM todos
-WHERE session = ? AND completed = 0
-ORDER BY created_at DESC
+SELECT t.id, t.title FROM todos AS t
+WHERE t.session = ?
+ORDER BY t.created_at DESC
 `
 
 type ListTodosRow struct {
@@ -118,4 +117,15 @@ func (q *Queries) ListTodos(ctx context.Context, session string) ([]ListTodosRow
 		return nil, err
 	}
 	return items, nil
+}
+
+const trashTodoTransaction = `-- name: TrashTodoTransaction :exec
+INSERT INTO trash (session, title, created_at)
+SELECT t.session, t.title, t.created_at FROM todos AS t
+WHERE t.id = ?
+`
+
+func (q *Queries) TrashTodoTransaction(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, trashTodoTransaction, id)
+	return err
 }

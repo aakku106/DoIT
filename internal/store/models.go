@@ -9,11 +9,32 @@ import (
 	"time"
 )
 
+type Completed struct {
+	ID          int64     `json:"id"`
+	Session     string    `json:"session"`
+	Title       string    `json:"title"`
+	CompletedAt time.Time `json:"completed_at"`
+}
+
+type Ignored struct {
+	ID        int64     `json:"id"`
+	Session   string    `json:"session"`
+	Title     string    `json:"title"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
 type Todo struct {
 	ID        int64        `json:"id"`
 	Session   string       `json:"session"`
 	Title     string       `json:"title"`
 	CreatedAt time.Time    `json:"created_at"`
 	ExpiresAt sql.NullTime `json:"expires_at"`
-	Completed int64        `json:"completed"`
+}
+
+type Trash struct {
+	ID        int64     `json:"id"`
+	Session   string    `json:"session"`
+	Title     string    `json:"title"`
+	CreatedAt time.Time `json:"created_at"`
+	RemovedAt time.Time `json:"removed_at"`
 }
