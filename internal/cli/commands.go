@@ -39,7 +39,6 @@ func ListTodos(q *store.Queries) {
 			fmt.Printf("%s%s\t%s\n%s", Bold, Green, v.Title, Reset)
 		}
 	}
-
 }
 
 func DoneTodo(q *store.Queries, id int) {
