@@ -79,7 +79,11 @@ func RemoveTodo(q *store.Queries, id int) {
 		os.Exit(0)
 	}
 
-	err = q.DeleteTodo(context.Background(), dbId[id])
+	err = q.TrashTodoTransaction(context.Background(), dbId[id])
+	if err != nil {
+		log.Fatalln("Error while transferign data from todo table to trash table, ", err)
+	}
+	err = q.DeleteFromTodos(context.Background(), dbId[id])
 	if err != nil {
 		log.Fatalln(Red, "Error while deleting: ", err, Reset)
 	}
