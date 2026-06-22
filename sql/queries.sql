@@ -13,6 +13,16 @@ SELECT t.id FROM todos AS t
 WHERE t.session = ?
 ORDER BY t.created_at DESC;
 
+-- name: ListCompleted :many
+SELECT c.id, c.title FROM completed AS c
+WHERE c.session = ?
+ORDER BY c.created_at DESC;
+
+-- name: ListCompletedIDs :many
+SELECT c.id FROM completed AS c
+WHERE c.session = ?
+ORDER BY c.created_at DESC;
+
 -- name: CompleteTodoTransaction :exec
 INSERT INTO completed (session, title)
 SELECT t.session, t.title FROM todos AS t
