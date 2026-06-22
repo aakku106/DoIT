@@ -23,6 +23,16 @@ SELECT c.id FROM completed AS c
 WHERE c.session = ?
 ORDER BY c.created_at DESC;
 
+-- name: ListTrash :many
+SELECT t.id, t.session FROM trash AS t
+WHERE t.session = ?
+ORDER BY t.created_at DESC;
+
+-- name: ListTrashIDs :many
+SELECT t.id FROM trash AS t
+WHERE t.session = ?
+ORDER BY t.created_at DESC;
+
 -- name: CompleteTodoTransaction :exec
 INSERT INTO completed (session, title)
 SELECT t.session, t.title FROM todos AS t
