@@ -75,7 +75,7 @@ func main() {
 			fmt.Print("\033[H\033[2J")
 			if len(args) == 3 {
 				fmt.Println("Listing data from 'completed'")
-				call.ListCompleted(query)
+				call.Lis(query)
 			}
 		}
 
