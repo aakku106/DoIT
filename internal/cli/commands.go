@@ -41,8 +41,6 @@ func ListTodos(q *store.Queries) {
 	}
 }
 
-func
-
 func DoneTodo(q *store.Queries, id int) {
 	dbId, err := q.ListTodoIDs(context.Background(), "todo")
 	if err != nil {
