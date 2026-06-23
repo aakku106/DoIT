@@ -26,6 +26,7 @@ func AddTodo(query *store.Queries, title string) {
 	fmt.Println("ToDo Task:\t", Bold, Green, added.Title, Reset)
 	fmt.Println("Created At:\t", Green, added.CreatedAt.Local(), Reset)
 }
+
 func ListTodos(q *store.Queries) {
 	list, err := q.ListTodos(context.Background(), "todo")
 	if err != nil {
@@ -41,13 +42,13 @@ func ListTodos(q *store.Queries) {
 	}
 }
 
-func ListCompleted(q *store.Queries) {
-	list, err := q.ListCompleted(context.Background(), "todo")
+func ListCompleted(q *store.Queries, session string) {
+	list, err := q.ListCompleted(context.Background(), session)
 	if err != nil {
 		log.Fatalln("Error fetching data from completed table: ", err)
 	}
 	if len(list) == 0 {
-		fmt.Println("You have completed Nothing till")
+		fmt.Println("You have completed Nothing till !!")
 	} else {
 		for i, v := range list {
 			fmt.Printf("%s\n\t%d.%s", Dim, i, Reset)
