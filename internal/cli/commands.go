@@ -31,8 +31,23 @@ func ListTodos(q *store.Queries) {
 	if err != nil {
 		log.Fatalln("Error while listing todo data from DB: ", err)
 	}
-	if list == nil {
+	if len(list) == 0 {
 		fmt.Println("You are all done !!")
+	} else {
+		for i, v := range list {
+			fmt.Printf("%s\n\t%d.%s", Dim, i, Reset)
+			fmt.Printf("%s%s\t%s\n%s", Bold, Green, v.Title, Reset)
+		}
+	}
+}
+
+func ListCompleted(q *store.Queries) {
+	list, err := q.ListCompleted(context.Background(), "todo")
+	if err != nil {
+		log.Fatalln("Error fetching data from completed table: ", err)
+	}
+	if len(list) == 0 {
+		fmt.Println("You have completed Nothing till")
 	} else {
 		for i, v := range list {
 			fmt.Printf("%s\n\t%d.%s", Dim, i, Reset)
