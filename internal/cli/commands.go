@@ -178,3 +178,24 @@ func RemoveTrash(q *store.Queries, id int, session string) {
 
 	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
 }
+
+func RemoveIgnored(q *store.Queries, id int, session string) {
+	dbId, err := q.ListIgnoredIDs(context.Background(), session)
+	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit trash list>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You haven't Ignored anything YET !!", Reset)
+		os.Exit(0)
+	}
+
+	err = q.DeleteFromIgnored(context.Background(), dbId[id])
+	if err != nil {
+		log.Fatalln(Red, "Error while deleting: ", err, Reset)
+	}
+
+	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
+}
