@@ -30,7 +30,6 @@ func removeTodo(q *store.Queries, args []string) {
 		cli.RemoveTodo(q, id)
 	} else {
 		log.Panicln("wott???")
-		os.Exit(1)
 	}
 }
 
@@ -40,13 +39,15 @@ func removeCompleted(q *store.Queries, args []string) {
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
-	} else {
+	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
 			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit completed list to get correct id")
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveCompleted(q, id, "todo")
+	} else {
+		log.Panicln("wott???")
 	}
 }
 
@@ -56,13 +57,15 @@ func removeTrash(q *store.Queries, args []string) {
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
-	} else {
+	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
 			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit trash list, to get correct id")
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveCompleted(q, id, "todo")
+	} else {
+		log.Panicln("wott???")
 	}
 }
 
@@ -72,12 +75,14 @@ func removeIgnored(q *store.Queries, args []string) {
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
-	} else {
+	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
 			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit ignored list, to get correct id")
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveIgnored(q, id, "todo")
+	} else {
+		log.Panicln("wott???")
 	}
 }
