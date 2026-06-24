@@ -32,24 +32,7 @@ func main() {
 		doneTodo(query, args)
 
 	case "remove":
-		if len(args) < 3 {
-			fmt.Println(call.Cyan, "Specify what to Remove ?'provide task Id <use doit list>'", call.Reset)
-			os.Exit(1)
-		}
-
-		fmt.Println("---Are you sure You want To remove:", call.Red, args[2], call.Reset, "Y/N")
-		var a rune
-		fmt.Scanf("%c", &a)
-		if unicode.ToLower(a) == 'n' {
-			os.Exit(0)
-		} else { // we do need this else, cause lest say if user gave "wotver except N/n" it will still delete args[2] id from db
-			id, err := strconv.Atoi(args[2])
-			if err != nil || id < 0 {
-				fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset)
-			}
-			fmt.Println("Trying to Remove: ", call.Bold, call.Red, id, call.Reset)
-			call.RemoveTodo(query, id)
-		}
+		removeTodo(query, args)
 
 	case "completed":
 		if len(args) < 3 {
@@ -60,19 +43,7 @@ func main() {
 			listCompleted(query, args)
 
 		case "remove":
-			fmt.Println("---Are you sure You want To remove:", call.Red, args[3], call.Reset, "Y/N")
-			var a rune
-			fmt.Scanf("%c", &a)
-			if unicode.ToLower(a) == 'n' {
-				os.Exit(0)
-			} else {
-				id, err := strconv.Atoi(args[3])
-				if err != nil || id < 0 {
-					fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset, "use: doit completed list to get correct id")
-				}
-				fmt.Println("Trying to Remove: ", call.Bold, call.Red, id, call.Reset)
-				call.RemoveCompleted(query, id, "todo")
-			}
+			removeCompleted(query, args)
 
 		case "nuke":
 			fmt.Println(call.Red, "---Are you sure You want To Clear Completed :", call.Reset, "Y/N")
@@ -94,20 +65,7 @@ func main() {
 			listTrash(query, args)
 
 		case "remove":
-			fmt.Println("---Are you sure You want To remove:", call.Red, args[3], call.Reset, "Y/N")
-			var a rune
-			fmt.Scanf("%c", &a)
-			if unicode.ToLower(a) == 'n' {
-				os.Exit(0)
-			} else {
-				id, err := strconv.Atoi(args[3])
-				if err != nil || id < 0 {
-					fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset, "use: doit completed list to get correct id")
-				}
-				fmt.Println("Trying to Remove: ", call.Bold, call.Red, id, call.Reset)
-				call.RemoveCompleted(query, id, "todo")
-			}
-
+			removeTrash(query, args)
 		case "nuke":
 			fmt.Println(call.Red, "---Are you sure You want To Clear Completed :", call.Reset, "Y/N")
 			var a rune
