@@ -33,6 +33,16 @@ SELECT t.id FROM trash AS t
 WHERE t.session = ?
 ORDER BY t.created_at DESC;
 
+-- name: ListIgnored :many
+SELECT i.id, i.title FROM ignored AS i
+WHERE i.session = ?
+ORDER BY i.expired_at DESC;
+
+-- name: ListIgnoredIDs :many
+SELECT i.id FROM ignored AS i
+WHERE i.session = ?
+ORDER BY i.expired_at DESC;
+
 -- name: CompleteTodoTransaction :exec
 INSERT INTO completed (session, title)
 SELECT t.session, t.title FROM todos AS t
