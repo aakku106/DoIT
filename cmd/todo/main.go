@@ -12,7 +12,7 @@ import (
 func main() {
 	args := os.Args
 
-	if len(args) <= 2 {
+	if len(args) < 2 {
 		fmt.Println("Bro what >???<")
 		os.Exit(1)
 	}
@@ -73,6 +73,10 @@ func main() {
 		}
 
 	default:
+		if len(args) <= 2 {
+			fmt.Println("Bro what >???<")
+			os.Exit(1)
+		}
 		fmt.Println("Session cli")
 		sessionCall(args)
 	}
