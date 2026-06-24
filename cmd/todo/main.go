@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"unicode"
 
 	call "github.com/aakku106/DoIT/internal/cli"
 	create "github.com/aakku106/DoIT/internal/db"
@@ -13,6 +11,12 @@ import (
 
 func main() {
 	args := os.Args
+
+	if len(args) <= 2 {
+		fmt.Println("Bro what >???<")
+		os.Exit(1)
+	}
+
 	db, err := create.NewSQLite()
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -25,6 +29,7 @@ func main() {
 	switch args[1] {
 	case "add":
 		add(query, args)
+
 	case "list":
 		listTodo(query, args)
 
@@ -46,14 +51,7 @@ func main() {
 			removeCompleted(query, args)
 
 		case "nuke":
-			fmt.Println(call.Red, "---Are you sure You want To Clear Completed :", call.Reset, "Y/N")
-			var a rune
-			fmt.Scanf("%c", &a)
-			if unicode.ToLower(a) == 'n' {
-				os.Exit(0)
-			} else {
-				call.ClearCompleted(query)
-			}
+			clearCompleted(query)
 
 		default:
 			fmt.Println(call.Cyan, "Umm wot ??", call.Reset)
@@ -66,25 +64,15 @@ func main() {
 
 		case "remove":
 			removeTrash(query, args)
+
 		case "nuke":
-			fmt.Println(call.Red, "---Are you sure You want To Clear Completed :", call.Reset, "Y/N")
-			var a rune
-			fmt.Scanf("%c", &a)
-			if unicode.ToLower(a) == 'n' {
-				os.Exit(0)
-			} else {
-				call.ClearTrash(query)
-			}
+			clearTrash(query)
 
 		default:
 			fmt.Println(call.Cyan, "Umm wot ??", call.Reset)
 		}
 
 	default:
-		if len(args) <= 2 {
-			fmt.Println("Bro what >???<")
-			os.Exit(1)
-		}
 		fmt.Println("Session call")
 		sessionCall(args)
 	}
