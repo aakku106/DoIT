@@ -9,11 +9,23 @@ import (
 )
 
 type Querier interface {
+	ClearCompleted(ctx context.Context) error
+	ClearIgnored(ctx context.Context) error
+	ClearTrash(ctx context.Context) error
 	CompleteTodoTransaction(ctx context.Context, id int64) error
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
+	DeleteFromCompleted(ctx context.Context, id int64) error
+	DeleteFromIgnored(ctx context.Context, id int64) error
 	DeleteFromTodos(ctx context.Context, id int64) error
+	DeleteFromTrash(ctx context.Context, id int64) error
+	ListCompleted(ctx context.Context, session string) ([]ListCompletedRow, error)
+	ListCompletedIDs(ctx context.Context, session string) ([]int64, error)
+	ListIgnored(ctx context.Context, session string) ([]ListIgnoredRow, error)
+	ListIgnoredIDs(ctx context.Context, session string) ([]int64, error)
 	ListTodoIDs(ctx context.Context, session string) ([]int64, error)
 	ListTodos(ctx context.Context, session string) ([]ListTodosRow, error)
+	ListTrash(ctx context.Context, session string) ([]ListTrashRow, error)
+	ListTrashIDs(ctx context.Context, session string) ([]int64, error)
 	TrashTodoTransaction(ctx context.Context, id int64) error
 }
 

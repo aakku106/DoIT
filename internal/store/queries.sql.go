@@ -10,6 +10,33 @@ import (
 	"database/sql"
 )
 
+const clearCompleted = `-- name: ClearCompleted :exec
+DELETE FROM completed
+`
+
+func (q *Queries) ClearCompleted(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearCompleted)
+	return err
+}
+
+const clearIgnored = `-- name: ClearIgnored :exec
+DELETE FROM ignored
+`
+
+func (q *Queries) ClearIgnored(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearIgnored)
+	return err
+}
+
+const clearTrash = `-- name: ClearTrash :exec
+DELETE FROM trash
+`
+
+func (q *Queries) ClearTrash(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTrash)
+	return err
+}
+
 const completeTodoTransaction = `-- name: CompleteTodoTransaction :exec
 INSERT INTO completed (session, title)
 SELECT t.session, t.title FROM todos AS t
@@ -46,6 +73,26 @@ func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, e
 	return i, err
 }
 
+const deleteFromCompleted = `-- name: DeleteFromCompleted :exec
+DELETE FROM completed
+WHERE completed.id = ?
+`
+
+func (q *Queries) DeleteFromCompleted(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromCompleted, id)
+	return err
+}
+
+const deleteFromIgnored = `-- name: DeleteFromIgnored :exec
+DELETE FROM ignored
+WHERE ignored.id = ?
+`
+
+func (q *Queries) DeleteFromIgnored(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromIgnored, id)
+	return err
+}
+
 const deleteFromTodos = `-- name: DeleteFromTodos :exec
 DELETE FROM todos 
 WHERE todos.id = ?
@@ -54,6 +101,142 @@ WHERE todos.id = ?
 func (q *Queries) DeleteFromTodos(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteFromTodos, id)
 	return err
+}
+
+const deleteFromTrash = `-- name: DeleteFromTrash :exec
+DELETE FROM trash
+WHERE trash.id = ?
+`
+
+func (q *Queries) DeleteFromTrash(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromTrash, id)
+	return err
+}
+
+const listCompleted = `-- name: ListCompleted :many
+SELECT c.id, c.title FROM completed AS c
+WHERE c.session = ?
+ORDER BY c.completed_at DESC
+`
+
+type ListCompletedRow struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+func (q *Queries) ListCompleted(ctx context.Context, session string) ([]ListCompletedRow, error) {
+	rows, err := q.db.QueryContext(ctx, listCompleted, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListCompletedRow
+	for rows.Next() {
+		var i ListCompletedRow
+		if err := rows.Scan(&i.ID, &i.Title); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCompletedIDs = `-- name: ListCompletedIDs :many
+SELECT c.id FROM completed AS c
+WHERE c.session = ?
+ORDER BY c.created_at DESC
+`
+
+func (q *Queries) ListCompletedIDs(ctx context.Context, session string) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, listCompletedIDs, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listIgnored = `-- name: ListIgnored :many
+SELECT i.id, i.title FROM ignored AS i
+WHERE i.session = ?
+ORDER BY i.expired_at DESC
+`
+
+type ListIgnoredRow struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+func (q *Queries) ListIgnored(ctx context.Context, session string) ([]ListIgnoredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnored, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListIgnoredRow
+	for rows.Next() {
+		var i ListIgnoredRow
+		if err := rows.Scan(&i.ID, &i.Title); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listIgnoredIDs = `-- name: ListIgnoredIDs :many
+SELECT i.id FROM ignored AS i
+WHERE i.session = ?
+ORDER BY i.expired_at DESC
+`
+
+func (q *Queries) ListIgnoredIDs(ctx context.Context, session string) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnoredIDs, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listTodoIDs = `-- name: ListTodoIDs :many
@@ -109,6 +292,69 @@ func (q *Queries) ListTodos(ctx context.Context, session string) ([]ListTodosRow
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTrash = `-- name: ListTrash :many
+SELECT t.id, t.title FROM trash AS t
+WHERE t.session = ?
+ORDER BY t.created_at DESC
+`
+
+type ListTrashRow struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+func (q *Queries) ListTrash(ctx context.Context, session string) ([]ListTrashRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTrash, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTrashRow
+	for rows.Next() {
+		var i ListTrashRow
+		if err := rows.Scan(&i.ID, &i.Title); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTrashIDs = `-- name: ListTrashIDs :many
+SELECT t.id FROM trash AS t
+WHERE t.session = ?
+ORDER BY t.created_at DESC
+`
+
+func (q *Queries) ListTrashIDs(ctx context.Context, session string) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, listTrashIDs, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

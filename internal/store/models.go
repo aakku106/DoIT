@@ -20,7 +20,7 @@ type Ignored struct {
 	ID        int64     `json:"id"`
 	Session   string    `json:"session"`
 	Title     string    `json:"title"`
-	ExpiresAt time.Time `json:"expires_at"`
+	ExpiredAt time.Time `json:"expired_at"`
 }
 
 type Todo struct {
