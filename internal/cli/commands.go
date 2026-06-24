@@ -167,7 +167,7 @@ func RemoveTrash(q *store.Queries, id int, session string) {
 	if len(dbId) < id {
 		log.Fatalln(Red, "Provide correct id <use: doit trash list>", Reset)
 	} else if len(dbId) == 0 {
-		log.Println(Yellow, "You haven't Completed anything YET !!", Reset)
+		log.Println(Yellow, "You haven't Removed anything YET !!", Reset)
 		os.Exit(0)
 	}
 
