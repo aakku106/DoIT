@@ -79,6 +79,16 @@ func main() {
 			}
 		}
 
+	case "trash":
+		switch args[2] {
+		case "list":
+			fmt.Print("\033[H\033[2J")
+			if len(args) == 3 {
+				fmt.Println("Listing data from 'trash'")
+				call.ListTrash(query, "todo")
+			}
+		}
+
 	default:
 		fmt.Println("Session call")
 		if len(args) <= 2 {

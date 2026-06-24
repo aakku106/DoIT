@@ -57,6 +57,21 @@ func ListCompleted(q *store.Queries, session string) {
 	}
 }
 
+func ListTrash(q *store.Queries, session string) {
+	list, err := q.ListTrash(context.Background(), session)
+	if err != nil {
+		log.Fatalln("Error fetching data from completed table: ", err)
+	}
+	if len(list) == 0 {
+		fmt.Println(Yellow, "You haven't removed anything yet !!", Reset)
+	} else {
+		for i, v := range list {
+			fmt.Printf("%s\n\t%d.%s", Dim, i, Reset)
+			fmt.Printf("%s%s\t%s\n%s", Bold, Green, v.Title, Reset)
+		}
+	}
+}
+
 func DoneTodo(q *store.Queries, id int) {
 	dbId, err := q.ListTodoIDs(context.Background(), "todo")
 	if err != nil {

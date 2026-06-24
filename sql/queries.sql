@@ -16,7 +16,7 @@ ORDER BY t.created_at DESC;
 -- name: ListCompleted :many
 SELECT c.id, c.title FROM completed AS c
 WHERE c.session = ?
-ORDER BY c.created_at DESC;
+ORDER BY c.completed_at DESC;
 
 -- name: ListCompletedIDs :many
 SELECT c.id FROM completed AS c
@@ -24,7 +24,7 @@ WHERE c.session = ?
 ORDER BY c.created_at DESC;
 
 -- name: ListTrash :many
-SELECT t.id, t.session FROM trash AS t
+SELECT t.id, t.title FROM trash AS t
 WHERE t.session = ?
 ORDER BY t.created_at DESC;
 

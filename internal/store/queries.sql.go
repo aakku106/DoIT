@@ -59,7 +59,7 @@ func (q *Queries) DeleteFromTodos(ctx context.Context, id int64) error {
 const listCompleted = `-- name: ListCompleted :many
 SELECT c.id, c.title FROM completed AS c
 WHERE c.session = ?
-ORDER BY c.created_at DESC
+ORDER BY c.completed_at DESC
 `
 
 type ListCompletedRow struct {
@@ -183,14 +183,14 @@ func (q *Queries) ListTodos(ctx context.Context, session string) ([]ListTodosRow
 }
 
 const listTrash = `-- name: ListTrash :many
-SELECT t.id, t.session FROM trash AS t
+SELECT t.id, t.title FROM trash AS t
 WHERE t.session = ?
 ORDER BY t.created_at DESC
 `
 
 type ListTrashRow struct {
-	ID      int64  `json:"id"`
-	Session string `json:"session"`
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
 }
 
 func (q *Queries) ListTrash(ctx context.Context, session string) ([]ListTrashRow, error) {
@@ -202,7 +202,7 @@ func (q *Queries) ListTrash(ctx context.Context, session string) ([]ListTrashRow
 	var items []ListTrashRow
 	for rows.Next() {
 		var i ListTrashRow
-		if err := rows.Scan(&i.ID, &i.Session); err != nil {
+		if err := rows.Scan(&i.ID, &i.Title); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
