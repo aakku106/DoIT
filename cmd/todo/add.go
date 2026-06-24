@@ -9,8 +9,8 @@ import (
 )
 
 func add(q *store.Queries, args []string) {
-	if len(args) < 3 {
-		fmt.Println(call.Cyan, "Specify what to add !", call.Reset)
+	if len(args) < 3 || len(args) != 3 {
+		fmt.Println(call.Cyan, "Specify what to add !, run exactly doit add your task", call.Reset)
 		os.Exit(1)
 	}
 	fmt.Print("Adding:")

@@ -12,15 +12,15 @@ import (
 )
 
 func removeTodo(q *store.Queries, args []string) {
-	if len(args) < 3 {
-		fmt.Println(cli.Cyan, "Specify what to Remove ?'provide task Id <use doit list>'", cli.Reset)
+	if len(args) != 3 || len(args) < 3 {
+		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <rm/remove> task id")
 		os.Exit(1)
 	}
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[2], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
+		os.Exit(1)
 	} else if unicode.ToLower(a) == 'y' { // we do need this else, cause lest say if user gave "wotver except N/n" it will still delete args[2] id from db
 		id, err := strconv.Atoi(args[2])
 		if err != nil || id < 0 {
@@ -34,11 +34,15 @@ func removeTodo(q *store.Queries, args []string) {
 }
 
 func removeCompleted(q *store.Queries, args []string) {
+	if len(args) != 4 || len(args) < 4 {
+		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <c/completed> <rm/remove> id")
+		os.Exit(1)
+	}
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[3], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
+		os.Exit(1)
 	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
@@ -52,11 +56,15 @@ func removeCompleted(q *store.Queries, args []string) {
 }
 
 func removeTrash(q *store.Queries, args []string) {
+	if len(args) != 4 || len(args) < 4 {
+		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <t/trash> <rm/remove> id")
+		os.Exit(1)
+	}
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[3], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
+		os.Exit(1)
 	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
@@ -70,11 +78,15 @@ func removeTrash(q *store.Queries, args []string) {
 }
 
 func removeIgnored(q *store.Queries, args []string) {
+	if len(args) != 4 || len(args) < 4 {
+		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <i/ignored> <rm/remove> id")
+		os.Exit(1)
+	}
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[3], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
+		os.Exit(1)
 	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {

@@ -10,8 +10,8 @@ import (
 )
 
 func doneTodo(q *store.Queries, args []string) {
-	if len(args) < 3 {
-		fmt.Println(cli.Cyan, "Specify what have you done ?", cli.Reset)
+	if len(args) < 3 || len(args) != 3 {
+		fmt.Println(cli.Cyan, "Specify what have you done ? run exactly doit <d.done> id", cli.Reset)
 		os.Exit(1)
 	}
 	id, err := strconv.Atoi(args[2])

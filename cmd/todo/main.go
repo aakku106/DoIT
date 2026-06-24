@@ -28,6 +28,7 @@ func main() {
 
 	switch args[1] {
 	case "add", "a":
+
 		add(query, args)
 
 	case "list", "ls":
@@ -42,7 +43,7 @@ func main() {
 	case "completed", "c":
 		if len(args) < 3 {
 			fmt.Println("Umm WOt Broo !! run, doit completed [list | remove | nuke] ")
-			os.Exit(0)
+			os.Exit(1)
 		}
 		switch args[2] {
 		case "list", "ls":
@@ -56,13 +57,13 @@ func main() {
 
 		default:
 			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
-			os.Exit(0)
+			os.Exit(1)
 		}
 
 	case "trash", "t":
 		if len(args) < 3 {
 			fmt.Println("Umm WOt Broo !! run, doit trash [list | remove | nuke] ")
-			os.Exit(0)
+			os.Exit(1)
 		}
 		switch args[2] {
 		case "list", "ls":
@@ -76,7 +77,7 @@ func main() {
 
 		default:
 			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
-			os.Exit(0)
+			os.Exit(1)
 		}
 
 	default:
