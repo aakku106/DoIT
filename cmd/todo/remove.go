@@ -24,12 +24,12 @@ func removeTodo(q *store.Queries, args []string) {
 	} else if unicode.ToLower(a) == 'y' { // we do need this else, cause lest say if user gave "wotver except N/n" it will still delete args[2] id from db
 		id, err := strconv.Atoi(args[2])
 		if err != nil || id < 0 {
-			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset)
+			log.Fatalln(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset)
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveTodo(q, id)
 	} else {
-		log.Panicln("wott???")
+		log.Fatalln("wott???")
 	}
 }
 
@@ -42,12 +42,12 @@ func removeCompleted(q *store.Queries, args []string) {
 	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
-			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit completed list to get correct id")
+			log.Fatalln(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit completed list to get correct id")
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveCompleted(q, id, "todo")
 	} else {
-		log.Panicln("wott???")
+		log.Fatalln("wott???")
 	}
 }
 
@@ -60,12 +60,12 @@ func removeTrash(q *store.Queries, args []string) {
 	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
-			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit trash list, to get correct id")
+			log.Fatalln(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit trash list, to get correct id")
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveCompleted(q, id, "todo")
 	} else {
-		log.Panicln("wott???")
+		log.Fatalln("wott???")
 	}
 }
 
@@ -78,11 +78,11 @@ func removeIgnored(q *store.Queries, args []string) {
 	} else if unicode.ToLower(a) == 'y' {
 		id, err := strconv.Atoi(args[3])
 		if err != nil || id < 0 {
-			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit ignored list, to get correct id")
+			log.Fatalln(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset, "use: doit ignored list, to get correct id")
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveIgnored(q, id, "todo")
 	} else {
-		log.Panicln("wott???")
+		log.Fatalln("wott???")
 	}
 }
