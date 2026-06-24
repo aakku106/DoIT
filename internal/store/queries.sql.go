@@ -10,6 +10,33 @@ import (
 	"database/sql"
 )
 
+const clearCompleted = `-- name: ClearCompleted :exec
+DELETE FROM completed
+`
+
+func (q *Queries) ClearCompleted(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearCompleted)
+	return err
+}
+
+const clearIgnored = `-- name: ClearIgnored :exec
+DELETE FROM ignored
+`
+
+func (q *Queries) ClearIgnored(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearIgnored)
+	return err
+}
+
+const clearTrash = `-- name: ClearTrash :exec
+DELETE FROM trash
+`
+
+func (q *Queries) ClearTrash(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTrash)
+	return err
+}
+
 const completeTodoTransaction = `-- name: CompleteTodoTransaction :exec
 INSERT INTO completed (session, title)
 SELECT t.session, t.title FROM todos AS t
@@ -46,6 +73,26 @@ func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, e
 	return i, err
 }
 
+const deleteFromCompleted = `-- name: DeleteFromCompleted :exec
+DELETE FROM completed
+WHERE completed.id = ?
+`
+
+func (q *Queries) DeleteFromCompleted(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromCompleted, id)
+	return err
+}
+
+const deleteFromIgnored = `-- name: DeleteFromIgnored :exec
+DELETE FROM ignored
+WHERE ignored.id = ?
+`
+
+func (q *Queries) DeleteFromIgnored(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromIgnored, id)
+	return err
+}
+
 const deleteFromTodos = `-- name: DeleteFromTodos :exec
 DELETE FROM todos 
 WHERE todos.id = ?
@@ -53,6 +100,16 @@ WHERE todos.id = ?
 
 func (q *Queries) DeleteFromTodos(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteFromTodos, id)
+	return err
+}
+
+const deleteFromTrash = `-- name: DeleteFromTrash :exec
+DELETE FROM trash
+WHERE trash.id = ?
+`
+
+func (q *Queries) DeleteFromTrash(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFromTrash, id)
 	return err
 }
 

@@ -46,3 +46,23 @@ WHERE t.id = ?;
 -- name: DeleteFromTodos :exec
 DELETE FROM todos 
 WHERE todos.id = ?;
+
+-- name: DeleteFromCompleted :exec
+DELETE FROM completed
+WHERE completed.id = ?;
+
+-- name: DeleteFromIgnored :exec
+DELETE FROM ignored
+WHERE ignored.id = ?;
+-- name: DeleteFromTrash :exec
+DELETE FROM trash
+WHERE trash.id = ?;
+
+-- name: ClearTrash :exec
+DELETE FROM trash;
+
+-- name: ClearCompleted :exec
+DELETE FROM completed;
+
+-- name: ClearIgnored :exec
+DELETE FROM ignored;
