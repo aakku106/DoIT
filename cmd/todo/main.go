@@ -27,49 +27,56 @@ func main() {
 	query := store.New(db)
 
 	switch args[1] {
-	case "add":
+	case "add", "a":
 		add(query, args)
 
-	case "list":
+	case "list", "ls":
 		listTodo(query, args)
 
-	case "done":
+	case "done", "d":
 		doneTodo(query, args)
 
-	case "remove":
+	case "remove", "rm":
 		removeTodo(query, args)
 
-	case "completed":
+	case "completed", "c":
 		if len(args) < 3 {
-			fmt.Println("Umm WOt Broo !!")
+			fmt.Println("Umm WOt Broo !! run, doit completed [list | remove | nuke] ")
+			os.Exit(0)
 		}
 		switch args[2] {
-		case "list":
+		case "list", "ls":
 			listCompleted(query, args)
 
-		case "remove":
+		case "remove", "rm":
 			removeCompleted(query, args)
 
-		case "nuke":
+		case "nuke", "n":
 			clearCompleted(query)
 
 		default:
 			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
+			os.Exit(0)
 		}
 
-	case "trash":
+	case "trash", "t":
+		if len(args) < 3 {
+			fmt.Println("Umm WOt Broo !! run, doit trash [list | remove | nuke] ")
+			os.Exit(0)
+		}
 		switch args[2] {
-		case "list":
+		case "list", "ls":
 			listTrash(query, args)
 
-		case "remove":
+		case "remove", "rm":
 			removeTrash(query, args)
 
-		case "nuke":
+		case "nuke", "n":
 			clearTrash(query)
 
 		default:
 			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
+			os.Exit(0)
 		}
 
 	default:
