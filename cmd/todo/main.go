@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	call "github.com/aakku106/DoIT/internal/cli"
-	create "github.com/aakku106/DoIT/internal/db"
+	"github.com/aakku106/DoIT/internal/cli"
+	"github.com/aakku106/DoIT/internal/db"
 	"github.com/aakku106/DoIT/internal/store"
 )
 
@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := create.NewSQLite()
+	db, err := db.NewSQLite()
 	if err != nil {
 		fmt.Println("Error: ", err)
 		os.Exit(1)
@@ -54,7 +54,7 @@ func main() {
 			clearCompleted(query)
 
 		default:
-			fmt.Println(call.Cyan, "Umm wot ??", call.Reset)
+			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
 		}
 
 	case "trash":
@@ -69,11 +69,11 @@ func main() {
 			clearTrash(query)
 
 		default:
-			fmt.Println(call.Cyan, "Umm wot ??", call.Reset)
+			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
 		}
 
 	default:
-		fmt.Println("Session call")
+		fmt.Println("Session cli")
 		sessionCall(args)
 	}
 }
