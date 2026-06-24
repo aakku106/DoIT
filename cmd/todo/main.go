@@ -29,15 +29,7 @@ func main() {
 		listTodo(query, args)
 
 	case "done":
-		if len(args) < 3 {
-			fmt.Println(call.Cyan, "Specify what have you done ?", call.Reset)
-			os.Exit(1)
-		}
-		id, err := strconv.Atoi(args[2])
-		if err != nil || id < 0 {
-			fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset)
-		}
-		call.DoneTodo(query, id)
+		doneTodo(query, args)
 
 	case "remove":
 		if len(args) < 3 {
