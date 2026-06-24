@@ -199,3 +199,13 @@ func RemoveIgnored(q *store.Queries, id int, session string) {
 
 	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
 }
+
+func ClearCompleted(q *store.Queries) {
+	q.ClearCompleted(context.Background())
+}
+func ClearIgnored(q *store.Queries) {
+	q.ClearIgnored(context.Background())
+}
+func ClearTrash(q *store.Queries) {
+	q.ClearTrash(context.Background())
+}
