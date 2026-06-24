@@ -24,19 +24,9 @@ func main() {
 
 	switch args[1] {
 	case "add":
-		if len(args) < 3 {
-			fmt.Println(call.Cyan, "Specify what to add !", call.Reset)
-			os.Exit(1)
-		}
-		fmt.Print("Adding:")
-		call.AddTodo(query, args[2])
-
+		add(query, args)
 	case "list":
-		fmt.Print("\033[H\033[2J")
-		if len(args) == 2 {
-			fmt.Println("Listing data from 'todo'")
-			call.ListTodos(query)
-		}
+		listTodo(query, args)
 
 	case "done":
 		if len(args) < 3 {
@@ -70,31 +60,82 @@ func main() {
 		}
 
 	case "completed":
+		if len(args) < 3 {
+			fmt.Println("Umm WOt Broo !!")
+		}
 		switch args[2] {
 		case "list":
-			fmt.Print("\033[H\033[2J")
-			if len(args) == 3 {
-				fmt.Println("Listing data from 'completed'")
-				call.ListCompleted(query, "todo")
+			listCompleted(query, args)
+
+		case "remove":
+			fmt.Println("---Are you sure You want To remove:", call.Red, args[3], call.Reset, "Y/N")
+			var a rune
+			fmt.Scanf("%c", &a)
+			if unicode.ToLower(a) == 'n' {
+				os.Exit(0)
+			} else {
+				id, err := strconv.Atoi(args[3])
+				if err != nil || id < 0 {
+					fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset, "use: doit completed list to get correct id")
+				}
+				fmt.Println("Trying to Remove: ", call.Bold, call.Red, id, call.Reset)
+				call.RemoveCompleted(query, id, "todo")
 			}
+
+		case "nuke":
+			fmt.Println(call.Red, "---Are you sure You want To Clear Completed :", call.Reset, "Y/N")
+			var a rune
+			fmt.Scanf("%c", &a)
+			if unicode.ToLower(a) == 'n' {
+				os.Exit(0)
+			} else {
+				call.ClearCompleted(query)
+			}
+
+		default:
+			fmt.Println(call.Cyan, "Umm wot ??", call.Reset)
 		}
 
 	case "trash":
 		switch args[2] {
 		case "list":
-			fmt.Print("\033[H\033[2J")
-			if len(args) == 3 {
-				fmt.Println("Listing data from 'trash'")
-				call.ListTrash(query, "todo")
+			listTrash(query, args)
+
+		case "remove":
+			fmt.Println("---Are you sure You want To remove:", call.Red, args[3], call.Reset, "Y/N")
+			var a rune
+			fmt.Scanf("%c", &a)
+			if unicode.ToLower(a) == 'n' {
+				os.Exit(0)
+			} else {
+				id, err := strconv.Atoi(args[3])
+				if err != nil || id < 0 {
+					fmt.Println(call.Red, call.Bold, "Enter valid id", err, call.Reset, "use: doit completed list to get correct id")
+				}
+				fmt.Println("Trying to Remove: ", call.Bold, call.Red, id, call.Reset)
+				call.RemoveCompleted(query, id, "todo")
 			}
+
+		case "nuke":
+			fmt.Println(call.Red, "---Are you sure You want To Clear Completed :", call.Reset, "Y/N")
+			var a rune
+			fmt.Scanf("%c", &a)
+			if unicode.ToLower(a) == 'n' {
+				os.Exit(0)
+			} else {
+				call.ClearTrash(query)
+			}
+
+		default:
+			fmt.Println(call.Cyan, "Umm wot ??", call.Reset)
 		}
 
 	default:
-		fmt.Println("Session call")
 		if len(args) <= 2 {
 			fmt.Println("Bro what >???<")
 			os.Exit(1)
 		}
+		fmt.Println("Session call")
 		sessionCall(args)
 	}
 }
