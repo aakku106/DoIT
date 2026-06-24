@@ -20,6 +20,8 @@ type Querier interface {
 	DeleteFromTrash(ctx context.Context, id int64) error
 	ListCompleted(ctx context.Context, session string) ([]ListCompletedRow, error)
 	ListCompletedIDs(ctx context.Context, session string) ([]int64, error)
+	ListIgnored(ctx context.Context, session string) ([]ListIgnoredRow, error)
+	ListIgnoredIDs(ctx context.Context, session string) ([]int64, error)
 	ListTodoIDs(ctx context.Context, session string) ([]int64, error)
 	ListTodos(ctx context.Context, session string) ([]ListTodosRow, error)
 	ListTrash(ctx context.Context, session string) ([]ListTrashRow, error)

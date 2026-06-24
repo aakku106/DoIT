@@ -72,6 +72,21 @@ func ListTrash(q *store.Queries, session string) {
 	}
 }
 
+func ListIgnored(q *store.Queries, session string) {
+	list, err := q.ListIgnored(context.Background(), session)
+	if err != nil {
+		log.Fatalln("Error fetching data from ignored table: ", err)
+	}
+	if len(list) == 0 {
+		fmt.Println(Yellow, "You haven't ignored anything yet !!", Reset)
+	} else {
+		for i, v := range list {
+			fmt.Printf("%s\n\t%d.%s", Dim, i, Reset)
+			fmt.Printf("%s%s\t%s\n%s", Bold, Green, v.Title, Reset)
+		}
+	}
+}
+
 func DoneTodo(q *store.Queries, id int) {
 	dbId, err := q.ListTodoIDs(context.Background(), "todo")
 	if err != nil {
@@ -115,6 +130,48 @@ func RemoveTodo(q *store.Queries, id int) {
 		log.Fatalln("Error while transferign data from todo table to trash table, ", err)
 	}
 	err = q.DeleteFromTodos(context.Background(), dbId[id])
+	if err != nil {
+		log.Fatalln(Red, "Error while deleting: ", err, Reset)
+	}
+
+	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
+}
+
+func RemoveCompleted(q *store.Queries, id int, session string) {
+	dbId, err := q.ListCompletedIDs(context.Background(), session)
+	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit completed list>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You haven't Completed anything YET !!", Reset)
+		os.Exit(0)
+	}
+
+	err = q.DeleteFromCompleted(context.Background(), dbId[id])
+	if err != nil {
+		log.Fatalln(Red, "Error while deleting: ", err, Reset)
+	}
+
+	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
+}
+
+func RemoveTrash(q *store.Queries, id int, session string) {
+	dbId, err := q.ListTrashIDs(context.Background(), session)
+	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit trash list>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You haven't Completed anything YET !!", Reset)
+		os.Exit(0)
+	}
+
+	err = q.DeleteFromTrash(context.Background(), dbId[id])
 	if err != nil {
 		log.Fatalln(Red, "Error while deleting: ", err, Reset)
 	}

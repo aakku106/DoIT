@@ -176,6 +176,69 @@ func (q *Queries) ListCompletedIDs(ctx context.Context, session string) ([]int64
 	return items, nil
 }
 
+const listIgnored = `-- name: ListIgnored :many
+SELECT i.id, i.title FROM ignored AS i
+WHERE i.session = ?
+ORDER BY i.expired_at DESC
+`
+
+type ListIgnoredRow struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+func (q *Queries) ListIgnored(ctx context.Context, session string) ([]ListIgnoredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnored, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListIgnoredRow
+	for rows.Next() {
+		var i ListIgnoredRow
+		if err := rows.Scan(&i.ID, &i.Title); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listIgnoredIDs = `-- name: ListIgnoredIDs :many
+SELECT i.id FROM ignored AS i
+WHERE i.session = ?
+ORDER BY i.expired_at DESC
+`
+
+func (q *Queries) ListIgnoredIDs(ctx context.Context, session string) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnoredIDs, session)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTodoIDs = `-- name: ListTodoIDs :many
 SELECT t.id FROM todos AS t
 WHERE t.session = ?
