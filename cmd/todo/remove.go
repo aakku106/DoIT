@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"unicode"
@@ -20,13 +21,16 @@ func removeTodo(q *store.Queries, args []string) {
 	fmt.Scanf("%c", &a)
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
-	} else { // we do need this else, cause lest say if user gave "wotver except N/n" it will still delete args[2] id from db
+	} else if unicode.ToLower(a) == 'y' { // we do need this else, cause lest say if user gave "wotver except N/n" it will still delete args[2] id from db
 		id, err := strconv.Atoi(args[2])
 		if err != nil || id < 0 {
 			fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset)
 		}
 		fmt.Println("Trying to Remove: ", cli.Bold, cli.Red, id, cli.Reset)
 		cli.RemoveTodo(q, id)
+	} else {
+		log.Panicln("wott???")
+		os.Exit(1)
 	}
 }
 
