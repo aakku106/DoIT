@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/aakku106/DoIT/internal/cli"
@@ -11,49 +13,84 @@ import (
 
 func handleTrashMove(q *store.Queries, args []string) {
 	id, err := strconv.ParseInt(args[3], 10, 64)
+
 	if err != nil {
-		log.Fatalln(cli.Red, "Enter valid id ", err, cli.Reset)
+		fmt.Println(cli.Red, "Enter valid id ", err, cli.Reset)
+		os.Exit(1)
 	}
+
 	if len(args) == 4 {
-		moveTrash(q, id)
+		if err := q.MoveTrashTo(context.Background(), id); err != nil {
+			log.Fatalln(cli.Red, err, cli.Reset)
+		}
 	} else if len(args) == 5 {
 		switch args[4] {
 		case "completed", "c":
-			moveTrashToCompleted(q, id)
-		case "ignored", "i":
-			moveTrashToIgnored(q, id)
-		}
-	}
-}
+			if err := q.MoveTrashToCompleted(context.Background(), id); err != nil {
+				log.Fatalln(cli.Red, err, cli.Reset)
+			}
 
-func moveTrash(q *store.Queries, id int64) {
-	q.MoveTrashTo(context.Background(), id)
-}
-func moveTrashToCompleted(q *store.Queries, id int64) {
-	q.MoveTrashToCompleted(context.Background(), id)
-}
-func moveTrashToIgnored(q *store.Queries, id int64) {
-	q.MoveCompletedToIgnored(context.Background(), id)
+		case "ignored", "i":
+			if err := q.MoveTrashToIgnored(context.Background(), id); err != nil {
+				log.Fatalln(cli.Red, err, cli.Reset)
+			}
+		}
+	} else {
+		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		os.Exit(1)
+	}
 }
 
 func handleComletedMove(q *store.Queries, args []string) {
 	id, err := strconv.ParseInt(args[3], 10, 64)
 	if err != nil {
-		log.Fatalln(cli.Red, "Enter valid id ", err, cli.Reset)
+		fmt.Println(cli.Red, "Enter valid id ", err, cli.Reset)
+		os.Exit(1)
 	}
 	if len(args) == 4 {
-		moveComepeted(q, id)
+		if err := q.MoveCompletedTo(context.Background(), id); err != nil {
+			log.Fatalln(cli.Red, err, cli.Reset)
+		}
 	} else if len(args) == 5 {
-		moveTrash(q, id)
+		switch args[4] {
+		case "trash", "t":
+			if err := q.MoveCompletedToTrash(context.Background(), id); err != nil {
+				log.Fatalln(cli.Red, err, cli.Reset)
+			}
+		case "ignored", "i":
+			if err := q.MoveCompletedToIgnored(context.Background(), id); err != nil {
+				log.Fatalln(cli.Red, err, cli.Reset)
+			}
+		}
+	} else {
+		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		os.Exit(1)
 	}
 }
 
-func moveComepeted(q *store.Queries, id int64)          {}
-func moveComepetedToTrash(q *store.Queries, id int64)   {}
-func moveComepetedToIgnored(q *store.Queries, id int64) {}
-
-func handleIgnoredMove(q *store.Queries, args []string) {}
-
-func moveIgnored(q *store.Queries, id int64)          {}
-func moveIgnoredToTrash(q *store.Queries, id int64)   {}
-func moveIgnoredCompleted(q *store.Queries, id int64) {}
+func handleIgnoredMove(q *store.Queries, args []string) {
+	id, err := strconv.ParseInt(args[3], 10, 64)
+	if err != nil {
+		fmt.Println(cli.Red, "Enter valid id ", err, cli.Reset)
+		os.Exit(1)
+	}
+	if len(args) == 4 {
+		if err := q.MoveIgnoredTo(context.Background(), id); err != nil {
+			log.Fatalln(cli.Red, err, cli.Reset)
+		}
+	} else if len(args) == 5 {
+		switch args[4] {
+		case "trash", "t":
+			if err := q.MoveIgnoredToTrash(context.Background(), id); err != nil {
+				log.Fatalln(cli.Red, err, cli.Reset)
+			}
+		case "completed", "c":
+			if err := q.MoveIgnoredToCompleted(context.Background(), id); err != nil {
+				log.Fatalln(cli.Red, err, cli.Reset)
+			}
+		}
+	} else {
+		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		os.Exit(1)
+	}
+}
