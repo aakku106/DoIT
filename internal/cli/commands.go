@@ -200,6 +200,30 @@ func RemoveIgnored(q *store.Queries, id int, session string) {
 	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
 }
 
+func MoveTrash(q *store.Queries, id int64) error {
+	err := q.MoveTrashTo(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveTrashToCompleted(q *store.Queries, id int64) error {
+	err := q.MoveTrashToCompleted(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveTrashToIgnored(q *store.Queries, id int64) error {
+	err := q.MoveTrashToIgnored(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ClearCompleted(q *store.Queries) {
 	q.ClearCompleted(context.Background())
 }
