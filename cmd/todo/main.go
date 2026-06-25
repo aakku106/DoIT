@@ -42,7 +42,7 @@ func main() {
 
 	case "completed", "c":
 		if len(args) < 3 {
-			fmt.Println("Umm WOt Broo !! run, doit completed [list | remove | nuke] ")
+			fmt.Println("Umm WOt Broo !! run, doit <c/completed> [list | remove | nuke] ")
 			os.Exit(1)
 		}
 		switch args[2] {
@@ -62,7 +62,7 @@ func main() {
 
 	case "trash", "t":
 		if len(args) < 3 {
-			fmt.Println("Umm WOt Broo !! run, doit trash [list | remove | nuke] ")
+			fmt.Println("Umm WOt Broo !! run, doit <t/trash> [list | remove | nuke] ")
 			os.Exit(1)
 		}
 		switch args[2] {
@@ -80,6 +80,7 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "ignored", "i":
 	default:
 		if len(args) <= 2 {
 			fmt.Println("Bro what >???<")
