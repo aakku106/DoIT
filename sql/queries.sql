@@ -68,6 +68,20 @@ INSERT INTO trash (session,title,created_at)
 SELECT c.session, c.title, c.completed_at FROM completed AS c
 WHERE c.id = ?;
 
+-- name: MoveTrashTo :exec
+INSERT INTO todos (session,title)
+SELECT t.session, t.title FROM trash AS t
+WHERE t.id = ?;
+
+-- name: MoveTrashToCompleted :exec
+INSERT INTO completed (session,title)
+SELECT t.session, t.title FROM trash AS t
+WHERE t.id = ?;
+
+INSERT INTO completed (session,title)
+SELECT t.session, t.title FROM trash AS t
+WHERE t.id = ?;
+
 -- name: DeleteFromTodos :exec
 DELETE FROM todos 
 WHERE todos.id = ?;
