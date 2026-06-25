@@ -1,6 +1,9 @@
 package main
 
-import "github.com/aakku106/DoIT/internal/store"
+import (
+	"context"
+	"log"
+	"strconv"
 
 func moveTrash(q *store.Queries, args []string)            {}
 func moveTrashToCompleted(q *store.Queries, args []string) {}
