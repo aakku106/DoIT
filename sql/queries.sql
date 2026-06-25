@@ -78,9 +78,25 @@ INSERT INTO completed (session,title)
 SELECT t.session, t.title FROM trash AS t
 WHERE t.id = ?;
 
+-- name: MoveTrashToIgnored :exec
 INSERT INTO completed (session,title)
 SELECT t.session, t.title FROM trash AS t
 WHERE t.id = ?;
+
+-- name: MoveIgnoredTo :exec
+INSERT INTO todos (session,title)
+SELECT i.session, i.title FROM ignored AS i
+WHERE i.id = ?;
+
+-- name: MoveIgnoredToCompleted :exec
+INSERT INTO completed (session,title)
+SELECT i.session, i.title FROM ignored AS i
+WHERE i.id = ?;
+
+-- name: MoveIgnoredToTrash :exec
+INSERT INTO trash (session,title,created_at)
+SELECT i.session, i.title, i.expired_at FROM ignored AS i
+WHERE i.id = ?;
 
 -- name: DeleteFromTodos :exec
 DELETE FROM todos 
