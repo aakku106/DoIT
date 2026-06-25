@@ -248,6 +248,30 @@ func MoveCompletedToIgnored(q *store.Queries, id int64) error {
 	return nil
 }
 
+func MoveIgnored(q *store.Queries, id int64) error {
+	err := q.MoveIgnoredTo(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveIgnoredToCompleted(q *store.Queries, id int64) error {
+	err := q.MoveIgnoredToCompleted(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveIgnoredToTrash(q *store.Queries, id int64) error {
+	err := q.MoveIgnoredToTrash(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ClearCompleted(q *store.Queries) {
 	q.ClearCompleted(context.Background())
 }
