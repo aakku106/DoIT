@@ -41,7 +41,7 @@ func main() {
 		removeTodo(query, args)
 
 	case "completed", "c":
-		if len(args) < 3 {
+		if len(args) < 4 {
 			fmt.Println("Umm WOt Broo !! run, doit <c/completed> [list | remove | nuke] ")
 			os.Exit(1)
 		}
@@ -98,6 +98,24 @@ func main() {
 		default:
 			fmt.Println(cli.Cyan, "Umm wot ??", cli.Reset)
 			os.Exit(1)
+		}
+
+	case "move", "mv":
+
+		if len(args) < 4 {
+			fmt.Println("Umm Wot Broo !! run, doit <mv/move> [<t/trash> | <i/ignored> | <c/completed>] id  [<t/trash> | <i/ignored> | <c/completed>]")
+			os.Exit(1)
+		}
+
+		switch args[2] {
+		case "trash", "t":
+			handleTrashMove(query, args)
+		case "completed", "c":
+			handleComletedMove(query, args)
+		case "ignored", "i":
+			handleIgnoredMove(query, args)
+		default:
+			fmt.Println(cli.Cyan, "move commad only work for trash,ignored,completed tables", cli.Reset)
 		}
 
 	default:
