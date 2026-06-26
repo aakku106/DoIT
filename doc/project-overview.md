@@ -156,6 +156,7 @@ Optional next steps I can do for you:
 - Add a short `README.md` with quick run examples and build instructions.
 - Consolidate schema management (pick migrations or packaged schema).
 - Add a lightweight test that runs against an in-memory SQLite DB.
+
 ## Quick mental model
 
 Use this map when you return later:
@@ -167,10 +168,11 @@ Use this map when you return later:
 - DB connection/init -> `internal/db/sqlite.go`
 
 ## Fast summary of the current state
- - The app supports adding, listing, completing, removing, and moving todos between `todo`, `completed`, `trash`, and `ignored` tables.
- - CLI and command helpers are mostly implemented and call the generated `store` methods.
- - The generated `sqlc` layer is up-to-date and includes transaction/move helpers.
- - The main maintenance concern is schema/migration strategy consolidation and small cleanup opportunities (arg parsing helpers, tests).
+
+- The app supports adding, listing, completing, removing, and moving todos between `todo`, `completed`, `trash`, and `ignored` tables.
+- CLI and command helpers are mostly implemented and call the generated `store` methods.
+- The generated `sqlc` layer is up-to-date and includes transaction/move helpers.
+- The main maintenance concern is schema/migration strategy consolidation and small cleanup opportunities (arg parsing helpers, tests).
 
 ### How to run (quick)
 
