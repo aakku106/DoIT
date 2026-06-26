@@ -26,6 +26,15 @@ type Querier interface {
 	ListTodos(ctx context.Context, session string) ([]ListTodosRow, error)
 	ListTrash(ctx context.Context, session string) ([]ListTrashRow, error)
 	ListTrashIDs(ctx context.Context, session string) ([]int64, error)
+	MoveCompletedTo(ctx context.Context, id int64) error
+	MoveCompletedToIgnored(ctx context.Context, id int64) error
+	MoveCompletedToTrash(ctx context.Context, id int64) error
+	MoveIgnoredTo(ctx context.Context, id int64) error
+	MoveIgnoredToCompleted(ctx context.Context, id int64) error
+	MoveIgnoredToTrash(ctx context.Context, id int64) error
+	MoveTrashTo(ctx context.Context, id int64) error
+	MoveTrashToCompleted(ctx context.Context, id int64) error
+	MoveTrashToIgnored(ctx context.Context, id int64) error
 	TrashTodoTransaction(ctx context.Context, id int64) error
 }
 

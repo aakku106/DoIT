@@ -200,6 +200,78 @@ func RemoveIgnored(q *store.Queries, id int, session string) {
 	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
 }
 
+func MoveTrash(q *store.Queries, id int64) error {
+	err := q.MoveTrashTo(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveTrashToCompleted(q *store.Queries, id int64) error {
+	err := q.MoveTrashToCompleted(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveTrashToIgnored(q *store.Queries, id int64) error {
+	err := q.MoveTrashToIgnored(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveCompleted(q *store.Queries, id int64) error {
+	err := q.MoveCompletedTo(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveCompletedToTrash(q *store.Queries, id int64) error {
+	err := q.MoveCompletedToTrash(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveCompletedToIgnored(q *store.Queries, id int64) error {
+	err := q.MoveCompletedToIgnored(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveIgnored(q *store.Queries, id int64) error {
+	err := q.MoveIgnoredTo(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveIgnoredToCompleted(q *store.Queries, id int64) error {
+	err := q.MoveIgnoredToCompleted(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MoveIgnoredToTrash(q *store.Queries, id int64) error {
+	err := q.MoveIgnoredToTrash(context.Background(), id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ClearCompleted(q *store.Queries) {
 	q.ClearCompleted(context.Background())
 }

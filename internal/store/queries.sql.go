@@ -365,6 +365,105 @@ func (q *Queries) ListTrashIDs(ctx context.Context, session string) ([]int64, er
 	return items, nil
 }
 
+const moveCompletedTo = `-- name: MoveCompletedTo :exec
+INSERT INTO todos (session,title)
+SELECT c.session, c.title FROM completed AS c
+WHERE c.id = ?
+`
+
+func (q *Queries) MoveCompletedTo(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveCompletedTo, id)
+	return err
+}
+
+const moveCompletedToIgnored = `-- name: MoveCompletedToIgnored :exec
+INSERT INTO ignored (session,title)
+SELECT c.session, c.title FROM completed AS c
+WHERE c.id = ?
+`
+
+func (q *Queries) MoveCompletedToIgnored(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveCompletedToIgnored, id)
+	return err
+}
+
+const moveCompletedToTrash = `-- name: MoveCompletedToTrash :exec
+INSERT INTO trash (session,title,created_at)
+SELECT c.session, c.title, c.completed_at FROM completed AS c
+WHERE c.id = ?
+`
+
+func (q *Queries) MoveCompletedToTrash(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveCompletedToTrash, id)
+	return err
+}
+
+const moveIgnoredTo = `-- name: MoveIgnoredTo :exec
+INSERT INTO todos (session,title)
+SELECT i.session, i.title FROM ignored AS i
+WHERE i.id = ?
+`
+
+func (q *Queries) MoveIgnoredTo(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveIgnoredTo, id)
+	return err
+}
+
+const moveIgnoredToCompleted = `-- name: MoveIgnoredToCompleted :exec
+INSERT INTO completed (session,title)
+SELECT i.session, i.title FROM ignored AS i
+WHERE i.id = ?
+`
+
+func (q *Queries) MoveIgnoredToCompleted(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveIgnoredToCompleted, id)
+	return err
+}
+
+const moveIgnoredToTrash = `-- name: MoveIgnoredToTrash :exec
+INSERT INTO trash (session,title,created_at)
+SELECT i.session, i.title, i.expired_at FROM ignored AS i
+WHERE i.id = ?
+`
+
+func (q *Queries) MoveIgnoredToTrash(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveIgnoredToTrash, id)
+	return err
+}
+
+const moveTrashTo = `-- name: MoveTrashTo :exec
+INSERT INTO todos (session,title)
+SELECT t.session, t.title FROM trash AS t
+WHERE t.id = ?
+`
+
+func (q *Queries) MoveTrashTo(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveTrashTo, id)
+	return err
+}
+
+const moveTrashToCompleted = `-- name: MoveTrashToCompleted :exec
+INSERT INTO completed (session,title)
+SELECT t.session, t.title FROM trash AS t
+WHERE t.id = ?
+`
+
+func (q *Queries) MoveTrashToCompleted(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveTrashToCompleted, id)
+	return err
+}
+
+const moveTrashToIgnored = `-- name: MoveTrashToIgnored :exec
+INSERT INTO completed (session,title)
+SELECT t.session, t.title FROM trash AS t
+WHERE t.id = ?
+`
+
+func (q *Queries) MoveTrashToIgnored(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, moveTrashToIgnored, id)
+	return err
+}
+
 const trashTodoTransaction = `-- name: TrashTodoTransaction :exec
 INSERT INTO trash (session, title, created_at)
 SELECT t.session, t.title, t.created_at FROM todos AS t

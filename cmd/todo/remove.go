@@ -38,6 +38,7 @@ func removeCompleted(q *store.Queries, args []string) {
 		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <c/completed> <rm/remove> id")
 		os.Exit(1)
 	}
+	fmt.Println(cli.Red, "___Once Removed From Completed Task Cannot be Retrived___", cli.Reset)
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[3], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
@@ -60,6 +61,7 @@ func removeTrash(q *store.Queries, args []string) {
 		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <t/trash> <rm/remove> id")
 		os.Exit(1)
 	}
+	fmt.Println(cli.Red, "___Once Removed From Trash Task Cannot be Retrived___", cli.Reset)
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[3], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
@@ -82,6 +84,7 @@ func removeIgnored(q *store.Queries, args []string) {
 		fmt.Println(cli.Red, "Specify what to remove, exactly run doit <i/ignored> <rm/remove> id")
 		os.Exit(1)
 	}
+	fmt.Println(cli.Red, "___Once Removed From Ignored Task Cannot be Retrived___", cli.Reset)
 	fmt.Println("---Are you sure You want To remove:", cli.Red, args[3], cli.Reset, "Y/N")
 	var a rune
 	fmt.Scanf("%c", &a)
