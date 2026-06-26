@@ -151,11 +151,6 @@ Additional generated API notes:
 5. Add usage/help output for invalid/missing args.
 6. Connect `remove` and `sessionCall` to real behavior or remove them if they are no longer part of the design.
 
-Optional next steps I can do for you:
-
-- Add a short `README.md` with quick run examples and build instructions.
-- Consolidate schema management (pick migrations or packaged schema).
-- Add a lightweight test that runs against an in-memory SQLite DB.
 
 ## Quick mental model
 
