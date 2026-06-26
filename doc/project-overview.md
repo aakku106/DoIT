@@ -2,19 +2,13 @@
 
 ## What this project is
 
-This is a Go CLI todo app using:
+This is a Go CLI todo app. Key technologies and choices:
 
-- SQLite for storage
-- sqlc for generating typed Go query code from SQL files
-- the app currently lives on the `FeatureAddToTodo` branch
+- SQLite for storage (local `todo.db`).
+- `sqlc` to generate a typed Go query layer from SQL files.
+- Uses the `ncruces/go-sqlite3` driver (see `go.mod`).
 
-The app is intended to run commands like:
-
-- `todo add "task title"`
-- `todo list`
-- `todo done 3`
-- `todo remove 3`
-- a fallback/session-style path from `main.go` for anything else
+The app supports a richer CLI surface (see "Commands" below).
 
 ## Main architecture
 
@@ -35,13 +29,17 @@ Dependency chain:
   - `sql/queries.sql`
   - configured by `sqlc.yml`
 
-Current command routing in `main.go`:
+Commands (current runtime routing in `cmd/todo/main.go`):
 
-- `add` checks for a title argument and then calls `AddTodo`
-- `list` only prints a message right now
-- `done` only prints the id and checks for missing args after that print
-- `remove` checks for a target and prints the remove message
-- anything else falls into `sessionCall(args)`
+- `add | a <task>`: create a new todo (calls `AddTodo`).
+- `list | ls`: list todos (`ListTodos`).
+- `done | d <id>`: mark a todo done (calls `DoneTodo`).
+- `remove | rm <id>`: interactive remove (moves to trash / deletes) (`RemoveTodo`).
+- `completed | c [list|remove|nuke]`: operate on the `completed` table.
+- `trash | t [list|remove|nuke]`: operate on the `trash` table.
+- `ignored | i [list|remove|nuke]`: operate on the `ignored` table.
+- `move | mv <t|c|i> <id> <t|c|i>`: move items between tables (trash/completed/ignored).
+- other arguments fall through to a `sessionCall(args)` placeholder.
 
 ## File-by-file purpose
 
@@ -56,50 +54,40 @@ Current command routing in `main.go`:
 ### DB bootstrap
 
 - `internal/db/sqlite.go`
-  - Opens SQLite DB (`todo.db`).
-  - Pings DB.
-  - Ensures `todos` table exists via inline schema SQL.
+  - Opens SQLite DB (`todo.db`) using `ncruces/go-sqlite3`.
+  - Executes the packaged schema (`sql.SchemaSQLite`) to ensure required tables exist.
+  - The SQL source files under `sql/` are the source-of-truth for schema and queries.
 
 ### CLI handlers
 
 - `internal/cli/commands.go`
-  - `AddTodo` is implemented and creates a todo in SQLite.
-  - `ListTodos` is currently just a print stub.
-  - `DoneTodo` and `RemoveTodo` are currently empty stubs.
-  - This is still the place where command logic should eventually call generated store methods like `CreateTodo`, `ListTodos`, `CompleteTodo`, and `DeleteTodo`.
+  - `AddTodo` is implemented and inserts a row via `CreateTodo`.
+  - `ListTodos` is implemented and calls `ListTodos` from the generated store (it prints compact rows).
+  - `DoneTodo`, `RemoveTodo`, and other helpers are implemented to use generated multi-step transactions (e.g., `CompleteTodoTransaction`, move/delete helpers).
+  - The CLI package also exposes helpers for completed/trash/ignored flows used by the `cmd/todo` entrypoint.
 
 ### Generated SQL access layer (sqlc output)
 
-- `internal/store/db.go`
-  - Defines query wrapper and DBTX interface.
-- `internal/store/models.go`
-  - Generated `Todo` model struct.
-- `internal/store/querier.go`
-  - Generated interface with typed query methods.
-- `internal/store/queries.sql.go`
-  - Generated implementations for:
-    - `CreateTodo(ctx, params)`
-    - `ListTodos(ctx, session)`
-    - `CompleteTodo(ctx, id)`
-    - `DeleteTodo(ctx, id)`
-  - `ListTodos` filters by `session`, so the caller must provide a session string even if the app only uses the default `todo` session.
+- `internal/store/db.go` — query wrapper and DBTX interface.
+- `internal/store/models.go` — generated model structs.
+- `internal/store/querier.go` — the generated `Querier` interface.
+- `internal/store/queries.sql.go` — implementations. Current generated methods include:
+  - `CreateTodo`, `ListTodos`, `ListTodoIDs`
+  - `CompleteTodoTransaction`, `DeleteFromTodos`, `TrashTodoTransaction`
+  - `ListCompleted`, `ListTrash`, `ListIgnored` and their ID-list helpers
+  - `Move*` helpers (move between tables)
+  - `ClearCompleted`, `ClearTrash`, `ClearIgnored` and per-table delete helpers
+
+Important: many queries operate on a `session` string (the code uses "todo" by default). Caller functions (CLI/entrypoint) provide that.
 
 ### SQL definitions (source of truth for sqlc)
 
-- `sql/schema.sql`
-  - Defines `todos` table schema.
-- `sql/queries.sql`
-  - Defines named queries used by sqlc.
-  - `CreateTodo` returns the inserted row.
-  - `ListTodos` selects all todo columns for one session.
-  - `CompleteTodo` marks `completed = 1`.
-  - `DeleteTodo` removes a row by id.
+- `sql/schema.sql` (and the packaged `sql` import) — schema for `todos`, `completed`, `trash`, `ignored` tables.
+- `sql/queries.sql` — named queries used by `sqlc`. The file includes queries for creating, listing, moving, and deleting across the four logical tables.
 
 ### Migration files
 
-- `migrations/001_init.sql`
-  - Also defines the same `todos` table.
-  - Currently duplicates schema found in `sql/schema.sql` and inline schema in DB init.
+- `migrations/001_init.sql` exists but the runtime currently applies the packaged `sql` schema on startup. Consider consolidating to a single migrations-driven approach if you want production-grade migration control.
 
 ### Extra/in-progress code
 
@@ -109,9 +97,7 @@ Current command routing in `main.go`:
 
 ### Runtime DB file
 
-- `cmd/todo/todo.db`
-  - SQLite database file created by the app when it runs.
-  - This is the actual local data store for todo records.
+- `todo.db` (created in the working directory when the app runs). This is the live database storing records.
 
 ### Experimental folders (not main runtime)
 
@@ -119,35 +105,15 @@ Current command routing in `main.go`:
 - `internal/tempTest/try2/...`
   These appear to be sqlc learning experiments/sandboxes and are separate from the main app execution path.
 
-## Current broken links / why app feels disconnected
+## Current gaps & maintenance notes
 
-1. `add` route passes wrong argument in `main.go`
+1. Argument parsing: `cmd/todo` has helper wrappers (`add`, `listTodo`, `doneTodo`, `removeTodo`, etc.) that validate args; however, argument validation is repeated across handlers — consider extracting a small CLI argument helper.
 
-- This was the old issue; the current branch now passes `args[2]` into `AddTodo`.
-- The remaining risk is that there is still no shared helper for parsing or validating all command args consistently.
+2. Migrations vs packaged schema: the code currently executes the packaged SQL schema on startup. If you want deterministic migrations, switch to an explicit migration runner (golang-migrate, goose, or custom scripts) and remove the packaged create statements.
 
-1. `done` route has type mismatch in `main.go`
+3. Session parameter: many queries expect a `session` string; the code currently uses the literal `"todo"` in calls — if you intend multiple sessions, add a global flag or env var.
 
-- `main.go` now only prints the id for `done` and does not yet call the store.
-- The command still needs real parsing and a call to `DoneTodo`/`CompleteTodo`.
-
-1. `ListTodos` call signature mismatch in `commands.go`
-
-- `ListTodos` is now a stub with no store call at all.
-- The generated method still requires `(context.Context, session string)`.
-
-1. CLI handlers are stubs/incomplete
-
-- `AddTodo` is now implemented and writes to the DB.
-- `ListTodos`, `DoneTodo`, and `RemoveTodo` are still incomplete.
-
-1. Multiple schema sources
-
-- Inline schema in `internal/db/sqlite.go`.
-- Schema in `sql/schema.sql`.
-- Migration in `migrations/001_init.sql`.
-- This works short-term but creates maintenance confusion.
-- `cmd/todo/todo.db` is the live local database file.
+4. Tests / CI: there are no unit tests in the repo; adding small tests around `internal/cli` and store transactions will protect refactors.
 
 ## How sqlc fits in
 
@@ -171,6 +137,11 @@ One important detail in the generated API:
 - `ListTodos` always needs a `session` string.
 - `CompleteTodo` and `DeleteTodo` both take an `id`.
 
+Additional generated API notes:
+
+- Transaction helpers like `CompleteTodoTransaction` and `TrashTodoTransaction` are used by the CLI to move rows between tables safely.
+- There are helper methods that return ID lists (`ListTodoIDs`, `ListTrashIDs`, etc.) which the CLI uses to map compact list indices to DB ids.
+
 ## Suggested stabilization order (small, practical)
 
 1. Fix arg parsing in `cmd/todo/main.go`.
@@ -180,6 +151,11 @@ One important detail in the generated API:
 5. Add usage/help output for invalid/missing args.
 6. Connect `remove` and `sessionCall` to real behavior or remove them if they are no longer part of the design.
 
+Optional next steps I can do for you:
+
+- Add a short `README.md` with quick run examples and build instructions.
+- Consolidate schema management (pick migrations or packaged schema).
+- Add a lightweight test that runs against an in-memory SQLite DB.
 ## Quick mental model
 
 Use this map when you return later:
@@ -191,8 +167,26 @@ Use this map when you return later:
 - DB connection/init -> `internal/db/sqlite.go`
 
 ## Fast summary of the current state
+ - The app supports adding, listing, completing, removing, and moving todos between `todo`, `completed`, `trash`, and `ignored` tables.
+ - CLI and command helpers are mostly implemented and call the generated `store` methods.
+ - The generated `sqlc` layer is up-to-date and includes transaction/move helpers.
+ - The main maintenance concern is schema/migration strategy consolidation and small cleanup opportunities (arg parsing helpers, tests).
 
-- The app now successfully creates todos through `AddTodo`.
-- The list, done, and remove paths are still mostly placeholders.
-- The generated sqlc layer is in place and points at the real SQL files.
-- The project still has duplicated schema setup, which is the main source of confusion on reload.
+### How to run (quick)
+
+Build and run directly:
+
+```bash
+cd /path/to/DoIT
+go build -o doit ./cmd/todo
+./doit add "buy milk"
+./doit list
+./doit d 0   # mark first listed item done (CLI uses index -> DB id mapping)
+```
+
+Or run without building:
+
+```bash
+go run ./cmd/todo add "wash car"
+go run ./cmd/todo list
+```
