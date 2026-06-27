@@ -10,7 +10,7 @@ before:
 builds:
   - id: doit
     binary: doit
-    main: ./cmd/todo/main.go
+    main: ./cmd/todo/
     env:
       - CGO_ENABLED=0
     
@@ -83,7 +83,7 @@ brews:
       name: homebrew-tap
     directory: Formula
     homepage: "https://adarashagaihre.com.np"
-    description: "A sleek CLI todo manager built in Go & WASM SQlite 3."
+    description: "A sleek CLI Task manager tool built with Go & WASM SQLite3."
     install: |
       bin.install "doit"
 
