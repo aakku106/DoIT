@@ -21,18 +21,26 @@ func handleTrashMove(q *store.Queries, args []string) {
 	if len(args) == 4 {
 		if err := cli.MoveTrash(q, id); err != nil {
 			log.Fatalln(cli.Red, err, cli.Reset)
+		} else {
+			fmt.Println(cli.Yellow, "Task Moved from 'Trash' to 'Todos")
 		}
+
 	} else if len(args) == 5 {
 		switch args[4] {
 		case "completed", "c":
 			if err := cli.MoveTrashToCompleted(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
+			} else {
+				fmt.Println(cli.Yellow, "Task Moved from 'Trash' to 'Completed")
 			}
 
 		case "ignored", "i":
 			if err := cli.MoveTrashToIgnored(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
+			} else {
+				fmt.Println(cli.Yellow, "Task Moved from 'Trash' to 'Ignored")
 			}
+
 		}
 	} else {
 		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
@@ -57,11 +65,17 @@ func handleComletedMove(q *store.Queries, args []string) {
 		case "trash", "t":
 			if err := cli.MoveCompletedToTrash(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
+			} else {
+				fmt.Println(cli.Yellow, "Task Moved from 'Completed' to 'Trash'")
 			}
+
 		case "ignored", "i":
 			if err := cli.MoveCompletedToIgnored(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
+			} else {
+				fmt.Println(cli.Yellow, "Task Moved from 'Completed' to 'Ignored'")
 			}
+
 		}
 	} else {
 		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
@@ -78,16 +92,24 @@ func handleIgnoredMove(q *store.Queries, args []string) {
 	if len(args) == 4 {
 		if err := cli.MoveIgnored(q, id); err != nil {
 			log.Fatalln(cli.Red, err, cli.Reset)
+		} else {
+			fmt.Println(cli.Yellow, "Task Moved from 'Ignored' to 'Todos'")
 		}
+
 	} else if len(args) == 5 {
 		switch args[4] {
 		case "trash", "t":
 			if err := cli.MoveIgnoredToTrash(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
+			} else {
+				fmt.Println(cli.Yellow, "Task Moved from 'Ignored' to 'Trash'")
 			}
+
 		case "completed", "c":
 			if err := cli.MoveIgnoredToCompleted(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
+			} else {
+				fmt.Println(cli.Yellow, "Task Moved from 'Ignored' to 'Completed'")
 			}
 		}
 	} else {
