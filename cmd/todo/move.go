@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -50,6 +49,8 @@ func handleComletedMove(q *store.Queries, args []string) {
 	if len(args) == 4 {
 		if err := cli.MoveCompleted(q, id); err != nil {
 			log.Fatalln(cli.Red, err, cli.Reset)
+		} else {
+			fmt.Println(cli.Yellow, "Task Moved from 'Completed' to 'Toodos")
 		}
 	} else if len(args) == 5 {
 		switch args[4] {
