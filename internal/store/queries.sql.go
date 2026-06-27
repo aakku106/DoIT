@@ -150,7 +150,7 @@ func (q *Queries) ListCompleted(ctx context.Context, session string) ([]ListComp
 const listCompletedIDs = `-- name: ListCompletedIDs :many
 SELECT c.id FROM completed AS c
 WHERE c.session = ?
-ORDER BY c.created_at DESC
+ORDER BY c.completed_at DESC
 `
 
 func (q *Queries) ListCompletedIDs(ctx context.Context, session string) ([]int64, error) {
