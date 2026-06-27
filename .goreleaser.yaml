@@ -81,6 +81,7 @@ brews:
   - repository:
       owner: aakku106
       name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     directory: Formula
     homepage: "https://adarashagaihre.com.np"
     description: "A sleek CLI Task manager tool built with Go & WASM SQLite3."
