@@ -225,8 +225,7 @@ func MoveTrashToIgnored(q *store.Queries, id int64) error {
 }
 
 func MoveCompleted(q *store.Queries, id int64) error {
-	err := q.MoveCompletedTo(context.Background(), id)
-	if err != nil {
+	if err := q.MoveCompletedTo(context.Background(), id); err != nil {
 		return err
 	}
 	return nil

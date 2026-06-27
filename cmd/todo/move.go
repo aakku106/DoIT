@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -20,18 +19,18 @@ func handleTrashMove(q *store.Queries, args []string) {
 	}
 
 	if len(args) == 4 {
-		if err := q.MoveTrashTo(context.Background(), id); err != nil {
+		if err := cli.MoveTrash(q, id); err != nil {
 			log.Fatalln(cli.Red, err, cli.Reset)
 		}
 	} else if len(args) == 5 {
 		switch args[4] {
 		case "completed", "c":
-			if err := q.MoveTrashToCompleted(context.Background(), id); err != nil {
+			if err := cli.MoveTrashToCompleted(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
 			}
 
 		case "ignored", "i":
-			if err := q.MoveTrashToIgnored(context.Background(), id); err != nil {
+			if err := cli.MoveTrashToIgnored(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
 			}
 		}
@@ -48,17 +47,19 @@ func handleComletedMove(q *store.Queries, args []string) {
 		os.Exit(1)
 	}
 	if len(args) == 4 {
-		if err := q.MoveCompletedTo(context.Background(), id); err != nil {
+		if err := cli.MoveCompleted(q, id); err != nil {
 			log.Fatalln(cli.Red, err, cli.Reset)
+		} else {
+			fmt.Println(cli.Yellow, "Task Moved from 'Completed' to 'Toodos")
 		}
 	} else if len(args) == 5 {
 		switch args[4] {
 		case "trash", "t":
-			if err := q.MoveCompletedToTrash(context.Background(), id); err != nil {
+			if err := cli.MoveCompletedToTrash(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
 			}
 		case "ignored", "i":
-			if err := q.MoveCompletedToIgnored(context.Background(), id); err != nil {
+			if err := cli.MoveCompletedToIgnored(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
 			}
 		}
@@ -75,17 +76,17 @@ func handleIgnoredMove(q *store.Queries, args []string) {
 		os.Exit(1)
 	}
 	if len(args) == 4 {
-		if err := q.MoveIgnoredTo(context.Background(), id); err != nil {
+		if err := cli.MoveIgnored(q, id); err != nil {
 			log.Fatalln(cli.Red, err, cli.Reset)
 		}
 	} else if len(args) == 5 {
 		switch args[4] {
 		case "trash", "t":
-			if err := q.MoveIgnoredToTrash(context.Background(), id); err != nil {
+			if err := cli.MoveIgnoredToTrash(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
 			}
 		case "completed", "c":
-			if err := q.MoveIgnoredToCompleted(context.Background(), id); err != nil {
+			if err := cli.MoveIgnoredToCompleted(q, id); err != nil {
 				log.Fatalln(cli.Red, err, cli.Reset)
 			}
 		}

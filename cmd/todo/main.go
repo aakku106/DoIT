@@ -41,7 +41,7 @@ func main() {
 		removeTodo(query, args)
 
 	case "completed", "c":
-		if len(args) < 4 {
+		if len(args) < 3 {
 			fmt.Println("Umm WOt Broo !! run, doit <c/completed> [list | remove | nuke] ")
 			os.Exit(1)
 		}
