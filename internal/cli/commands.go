@@ -27,8 +27,8 @@ func AddTodo(query *store.Queries, title string) {
 	fmt.Println("Created At:\t", Green, added.CreatedAt.Local(), Reset)
 }
 
-func ListTodos(q *store.Queries) {
-	list, err := q.ListTodos(context.Background(), "todo")
+func ListTodos(q *store.Queries, session string) {
+	list, err := q.ListTodos(context.Background(), session)
 	if err != nil {
 		log.Fatalln("Error while listing todo data from DB: ", err)
 	}
@@ -200,72 +200,190 @@ func RemoveIgnored(q *store.Queries, id int, session string) {
 	log.Println(Cyan, id, " Has been succesuflly deleted", Reset)
 }
 
-func MoveTrash(q *store.Queries, id int64) error {
-	err := q.MoveTrashTo(context.Background(), id)
+func MoveTrash(q *store.Queries, id int) error {
+	dbId, err := q.ListTrashIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveTrashTo(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromTrash(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveTrashToCompleted(q *store.Queries, id int64) error {
-	err := q.MoveTrashToCompleted(context.Background(), id)
+func MoveTrashToCompleted(q *store.Queries, id int) error {
+	dbId, err := q.ListTrashIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveTrashToCompleted(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromTrash(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveTrashToIgnored(q *store.Queries, id int64) error {
-	err := q.MoveTrashToIgnored(context.Background(), id)
+func MoveTrashToIgnored(q *store.Queries, id int) error {
+	dbId, err := q.ListTrashIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveTrashToIgnored(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromTrash(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveCompleted(q *store.Queries, id int64) error {
-	if err := q.MoveCompletedTo(context.Background(), id); err != nil {
+func MoveCompleted(q *store.Queries, id int) error {
+	dbId, err := q.ListCompletedIDs(context.Background(), "todo")
+	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveCompletedTo(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromCompleted(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveCompletedToTrash(q *store.Queries, id int64) error {
-	err := q.MoveCompletedToTrash(context.Background(), id)
+func MoveCompletedToTrash(q *store.Queries, id int) error {
+	dbId, err := q.ListCompletedIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveCompletedToTrash(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromCompleted(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveCompletedToIgnored(q *store.Queries, id int64) error {
-	err := q.MoveCompletedToIgnored(context.Background(), id)
+func MoveCompletedToIgnored(q *store.Queries, id int) error {
+	dbId, err := q.ListCompletedIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveCompletedToIgnored(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromCompleted(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveIgnored(q *store.Queries, id int64) error {
-	err := q.MoveIgnoredTo(context.Background(), id)
+func MoveIgnored(q *store.Queries, id int) error {
+	dbId, err := q.ListIgnoredIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveIgnoredTo(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromIgnored(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveIgnoredToCompleted(q *store.Queries, id int64) error {
-	err := q.MoveIgnoredToCompleted(context.Background(), id)
+func MoveIgnoredToCompleted(q *store.Queries, id int) error {
+	dbId, err := q.ListIgnoredIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveIgnoredToCompleted(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromIgnored(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MoveIgnoredToTrash(q *store.Queries, id int64) error {
-	err := q.MoveIgnoredToTrash(context.Background(), id)
+func MoveIgnoredToTrash(q *store.Queries, id int) error {
+	dbId, err := q.ListIgnoredIDs(context.Background(), "todo")
 	if err != nil {
+		log.Fatalln(Red, "Error while retriving ID's from SQLite", err, Reset)
+	}
+
+	if len(dbId) < id {
+		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+	} else if len(dbId) == 0 {
+		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
+		os.Exit(0)
+	}
+	if err := q.MoveIgnoredToTrash(context.Background(), dbId[id]); err != nil {
+		return err
+	}
+	if err := q.DeleteFromIgnored(context.Background(), dbId[id]); err != nil {
 		return err
 	}
 	return nil

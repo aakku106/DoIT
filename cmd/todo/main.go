@@ -127,5 +127,3 @@ func main() {
 		sessionCall(args)
 	}
 }
-
-func sessionCall(args []string) {}

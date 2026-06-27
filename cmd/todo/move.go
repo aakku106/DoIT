@@ -11,7 +11,7 @@ import (
 )
 
 func handleTrashMove(q *store.Queries, args []string) {
-	id, err := strconv.ParseInt(args[3], 10, 64)
+	id, err := strconv.Atoi(args[3])
 
 	if err != nil {
 		fmt.Println(cli.Red, "Enter valid id ", err, cli.Reset)
@@ -41,7 +41,7 @@ func handleTrashMove(q *store.Queries, args []string) {
 }
 
 func handleComletedMove(q *store.Queries, args []string) {
-	id, err := strconv.ParseInt(args[3], 10, 64)
+	id, err := strconv.Atoi(args[3])
 	if err != nil {
 		fmt.Println(cli.Red, "Enter valid id ", err, cli.Reset)
 		os.Exit(1)
@@ -70,7 +70,7 @@ func handleComletedMove(q *store.Queries, args []string) {
 }
 
 func handleIgnoredMove(q *store.Queries, args []string) {
-	id, err := strconv.ParseInt(args[3], 10, 64)
+	id, err := strconv.Atoi(args[3])
 	if err != nil {
 		fmt.Println(cli.Red, "Enter valid id ", err, cli.Reset)
 		os.Exit(1)

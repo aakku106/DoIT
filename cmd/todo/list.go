@@ -12,7 +12,7 @@ func listTodo(q *store.Queries, args []string) {
 	fmt.Print("\033[H\033[2J")
 	if len(args) == 2 {
 		fmt.Println("Listing data from 'todo'")
-		cli.ListTodos(q)
+		cli.ListTodos(q, "todo")
 	}
 }
 
