@@ -7,8 +7,10 @@ import (
 	_ "github.com/ncruces/go-sqlite3/driver"
 )
 
+const DataBaseName string = "doit.db"
+
 func NewSQLite() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "doit.db") // db name is changed from todo.db to doit.db
+	db, err := sql.Open("sqlite3", DataBaseName) // db name is changed from todo.db to doit.db
 	if err != nil {
 		return nil, err
 	}
