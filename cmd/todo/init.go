@@ -23,7 +23,8 @@ const (
 // ConfigFile = "config.json"
 )
 
-func init() {
+func initProject() {
+	fmt.Println("Init Called,  ")
 	pwd, err := os.Getwd()
 	if err != nil {
 		panic(err)

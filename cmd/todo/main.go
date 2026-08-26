@@ -26,12 +26,13 @@ import (
 func main() {
 	args := os.Args
 
-	if len(args) < 2 {
+	if len(args) < 1 {
 		fmt.Println("Bro what >???<")
 		os.Exit(1)
 	}
 
-	if len(os.Args) > 1 && args[1] == "init" {
+	if args[1] == "init" {
+		initProject()
 	}
 
 	db, err := db.NewSQLite()
