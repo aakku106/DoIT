@@ -37,6 +37,7 @@ func initProject() {
 	// 1. Check if .doit already exists
 	if _, err := os.Stat(doitPath); err == nil {
 		fmt.Errorf("already a doit repository (directory %s exists)", RootDir)
+		os.Exit(0)
 	} else if !errors.Is(err, os.ErrNotExist) {
 		fmt.Errorf("failed to check status of %s: %w", RootDir, err)
 	}
