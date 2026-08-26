@@ -31,6 +31,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	if len(os.Args) > 1 && args[1] == "init" {
+	}
+
 	db, err := db.NewSQLite()
 	if err != nil {
 		fmt.Println("Error: ", err)
