@@ -22,7 +22,7 @@ const (
 
 // FilePerm   = 0644
 // ConfigFile = "config.json"
-)
+) // Fiel permision & config files will be implemented later on
 
 func initProject() {
 	fmt.Println("Init Called,  ")
@@ -42,7 +42,7 @@ func initProject() {
 		fmt.Errorf("failed to check status of %s: %w", RootDir, err)
 	}
 
-	// creatign .doit with 0755 permision
+	//2. create .doit with 0755 permision
 	if err := os.MkdirAll(doitPath, DirPerm); err != nil {
 		fmt.Errorf("failed to create directory %s: %w", doitPath, err)
 	}
