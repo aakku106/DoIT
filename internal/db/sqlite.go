@@ -7,7 +7,7 @@ import (
 	_ "github.com/ncruces/go-sqlite3/driver"
 )
 
-const DataBaseName string = "doit.db?_journal_mode=WAL&_foreign_keys=on"
+const DataBaseName string = "file:doit.db?_journal_mode=WAL&_foreign_keys=on"
 
 func NewSQLite() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", DataBaseName) // db name is changed from todo.db to doit.db
