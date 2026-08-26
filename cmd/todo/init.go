@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/aakku106/DoIT/internal/db"
 	"os"
 	"path/filepath"
 )
@@ -37,14 +38,15 @@ func initProject() {
 		os.Exit(1)
 	}
 
-	// 3. Create empty doit.db file inside .doit
-	dbPath := filepath.Join(doitPath, "doit.db")
-	dbFile, err := os.Create(dbPath)
+	// 3. Initialize SQLite database & apply tables
+	database, err := db.InitSQLite(doitPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error creating %s: %v\n", dbPath, err)
+		fmt.Fprintf(os.Stderr, "Error initializing database: %v\n", err)
+		// Clean up broken folder if database setup failed
+		os.RemoveAll(doitPath)
 		os.Exit(1)
 	}
-	dbFile.Close()
+	defer database.Close() // this needed to be done in init process
 
 	fmt.Printf("Initialized empty doit repository in %s\n", doitPath)
 }
