@@ -7,43 +7,44 @@ import (
 	"path/filepath"
 )
 
-// what this shall do !!
-/*
-create the folder named .doit inside the parent dir
-now inside
-.doit/
-it needs to have doit.db (This is our main db where everythign happens)
-That's all for now
-*/
-
 const (
 	RootDir = ".doit"
 	DirPerm = 0755
-
-// FilePerm   = 0644
-// ConfigFile = "config.json"
-) // Fiel permision & config files will be implemented later on
+)
 
 func initProject() {
-	fmt.Println("Init Called,  ")
+	fmt.Println("Init Called...")
 	pwd, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error getting working directory: %v\n", err)
+		os.Exit(1)
 	}
 
 	doitPath := filepath.Join(pwd, RootDir)
-	fmt.Println(doitPath)
 
 	// 1. Check if .doit already exists
 	if _, err := os.Stat(doitPath); err == nil {
-		fmt.Errorf("already a doit repository (directory %s exists)", RootDir)
-		os.Exit(0)
+		fmt.Fprintf(os.Stderr, "Error: already a doit repository (%s exists)\n", RootDir)
+		os.Exit(1)
 	} else if !errors.Is(err, os.ErrNotExist) {
-		fmt.Errorf("failed to check status of %s: %w", RootDir, err)
+		fmt.Fprintf(os.Stderr, "Error checking status of %s: %v\n", RootDir, err)
+		os.Exit(1)
 	}
 
-	//2. create .doit with 0755 permision
+	// 2. Create .doit folder
 	if err := os.MkdirAll(doitPath, DirPerm); err != nil {
-		fmt.Errorf("failed to create directory %s: %w", doitPath, err)
+		fmt.Fprintf(os.Stderr, "Error creating directory %s: %v\n", doitPath, err)
+		os.Exit(1)
 	}
+
+	// 3. Create empty doit.db file inside .doit
+	dbPath := filepath.Join(doitPath, "doit.db")
+	dbFile, err := os.Create(dbPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating %s: %v\n", dbPath, err)
+		os.Exit(1)
+	}
+	dbFile.Close()
+
+	fmt.Printf("Initialized empty doit repository in %s\n", doitPath)
 }
