@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -32,4 +33,16 @@ func initProject() {
 
 	doitPath := filepath.Join(pwd, RootDir)
 	fmt.Println(doitPath)
+
+	// 1. Check if .doit already exists
+	if _, err := os.Stat(doitPath); err == nil {
+		fmt.Errorf("already a doit repository (directory %s exists)", RootDir)
+	} else if !errors.Is(err, os.ErrNotExist) {
+		fmt.Errorf("failed to check status of %s: %w", RootDir, err)
+	}
+
+	// creatign .doit with 0755 permision
+	if err := os.MkdirAll(doitPath, DirPerm); err != nil {
+		fmt.Errorf("failed to create directory %s: %w", doitPath, err)
+	}
 }
