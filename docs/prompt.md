@@ -30,9 +30,14 @@ go run ./cmd/todo add "task"
 ./dev-build.sh   # dev build to ~/go/bin/xdoit
 ```
 
+## Release / CI
+- `.github/workflows/release.yml` + `.goreleaser.yaml`: cross-compiles `doit` for many OS/arch; on **`v*` tag pushes** builds, attaches archives to GitHub release, and publishes a Homebrew formula to `aakku106/homebrew-tap`. Needs `GITHUB_TOKEN` + `HOMEBREW_TAP_TOKEN` secrets.
+- Manpage: `docs/man/doit.1`.
+- No README file currently.
+
 ## State
 - `internal/todo/service.go`: unused stub.
 - `temp/`: sandbox, not part of app.
-- No tests, no CI, no linter, no README.
+- No tests, no linter.
 - `db.NewSQLite` has leftover debug print/log noise in `findDoitDir`.
 - License: GPLv3 — keep header on all source files.

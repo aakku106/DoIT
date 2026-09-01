@@ -91,6 +91,13 @@ Dependency chain:
 
 - `temp/` — experimental scratch code, not on the main runtime path.
 
+## Release & distribution
+
+- `.goreleaser.yaml` — builds the `doit` binary for many OS/arch combos (including `js/wasm`) with `CGO_ENABLED=0`, `-s -w` ldflags. Archives as `tar.gz` (`.zip` on Windows). The `brews` section publishes a Homebrew formula to the **`aakku106/homebrew-tap`** repo (token from `HOMEBREW_TAP_TOKEN`), installed as `bin.install "doit"`.
+- `.github/workflows/release.yml` — GoReleaser CI. Triggers on **tag pushes matching `v*`**. Runs `goreleaser release --clean`; needs `GITHUB_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets.
+- Release flow: tag a commit `vX.Y.Z` and push; the workflow builds, attaches archives to the GitHub release, and updates the Homebrew tap.
+- `dist/` is the build output dir (gitignored).
+
 ## How sqlc fits in
 
 `sqlc.yml` -> schema `sql/schema.sql`, queries `sql/queries.sql`, output `internal/store`.
@@ -116,7 +123,7 @@ Generated API notes:
 1. Argument parsing is duplicated across `cmd/todo/*.go` wrappers — could be consolidated into a helper.
 2. Migrations vs embedded schema: runtime uses the embedded schema; `migrations/` is stale. Pick one strategy.
 3. Session parameter: `session` is hardcoded to `"todo"` in every call; multi-session would need a global flag/env var and real `sessionCall`.
-4. No tests, no CI, no linter config in the repo. Adding tests around `internal/cli` and store transactions would protect refactors.
+4. No tests or linter config in the repo (CI exists only as the GoReleaser release workflow — see "Release & distribution" below). Adding tests around `internal/cli` and store transactions would protect refactors.
 5. `internal/todo/service.go` is unused.
 6. `internal/db/sqlite.go` contains debug `fmt.Println`/`log.Println` output (e.g. "FIndingDIR", "ENterign finding looooooop-----------").
 

@@ -49,8 +49,15 @@ DB connection (`db.NewSQLite`) looks for a `.doit/` directory starting from cwd 
 - `session` column exists on all tables but is hardcoded to `"todo"` everywhere. Multi-session support is stubbed but not implemented.
 - `sessionCall(args)` in `cmd/todo/session.go` is an empty placeholder.
 - `migrations/001_init.sql` is stale — runtime uses the embedded schema from `sql/schema.sql` instead.
-- No tests, no CI, no linter config exist in the repo.
+- No tests or linter config exist in the repo. CI is only the GoReleaser release workflow (see below).
 - `temp/` contains experimental sandbox code, not part of the app.
+
+## Release & Distribution
+
+- `.goreleaser.yaml` cross-compiles the `doit` binary for many OS/arch combos (`CGO_ENABLED=0`, `-s -w`), archives as `tar.gz`/`zip` (Windows), and publishes a Homebrew formula to the `aakku106/homebrew-tap` repo.
+- `.github/workflows/release.yml` triggers GoReleaser on **tag pushes matching `v*`** (`goreleaser release --clean`). Needs `GITHUB_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets.
+- Release flow: tag a commit `vX.Y.Z`, push; workflow builds, attaches archives to the GitHub release, and updates the Homebrew tap.
+- Manpage: `docs/man/doit.1` (for package manager / brew manpage install).
 
 ## License
 
