@@ -79,7 +79,7 @@ SELECT t.session, t.title FROM trash AS t
 WHERE t.id = ?;
 
 -- name: MoveTrashToIgnored :exec
-INSERT INTO completed (session,title)
+INSERT INTO ignored (session,title)
 SELECT t.session, t.title FROM trash AS t
 WHERE t.id = ?;
 
