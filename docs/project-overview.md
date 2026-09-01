@@ -93,7 +93,7 @@ Dependency chain:
 
 ## Release & distribution
 
-- `.goreleaser.yaml` — builds the `doit` binary for many OS/arch combos (including `js/wasm`) with `CGO_ENABLED=0`, `-s -w` ldflags. Archives as `tar.gz` (`.zip` on Windows). The `brews` section publishes a Homebrew formula to the **`aakku106/homebrew-tap`** repo (token from `HOMEBREW_TAP_TOKEN`), installed as `bin.install "doit"`.
+- `.goreleaser.yaml` — builds the `doit` binary for Linux, Windows, and macOS on `amd64`/`arm64` with `CGO_ENABLED=0`, `-s -w` ldflags. Archives as `tar.gz` (`.zip` on Windows), including the manpage `docs/man/doit.1` and `LICENCE`. The `brews` section publishes a Homebrew formula to the **`aakku106/homebrew-tap`** repo (token from `HOMEBREW_TAP_TOKEN`), installing binary + manpage (`bin.install "doit"`, `man1.install "docs/man/doit.1"`).
 - `.github/workflows/release.yml` — GoReleaser CI. Triggers on **tag pushes matching `v*`**. Runs `goreleaser release --clean`; needs `GITHUB_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets.
 - Release flow: tag a commit `vX.Y.Z` and push; the workflow builds, attaches archives to the GitHub release, and updates the Homebrew tap.
 - `dist/` is the build output dir (gitignored).
