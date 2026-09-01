@@ -43,7 +43,7 @@ func handleTrashMove(q *store.Queries, args []string) {
 
 		}
 	} else {
-		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		fmt.Println("Run exactly: ", cli.Bold, " doit mv <t/trash> id [target]")
 		os.Exit(1)
 	}
 }
