@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -59,20 +60,27 @@ func InitSQLite(doitDir string) (*sql.DB, error) {
 
 // Helper function to search upwards for the .doit folder
 func findDoitDir() (string, error) {
+	fmt.Println("FIndingDIR")
 	cwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
+	log.Println(cwd)
 
 	dir := cwd
+	fmt.Println("ENterign finding looooooop-----------")
 	for {
 		doitPath := filepath.Join(dir, ".doit")
+		log.Println(doitPath)
 		if info, err := os.Stat(doitPath); err == nil && info.IsDir() {
+			log.Println("STat", info)
 			return doitPath, nil
 		}
 
 		parent := filepath.Dir(dir)
+		log.Println(parent)
 		if parent == dir { // Reached system root
+			log.Println("Reached System root", parent, dir)
 			break
 		}
 		dir = parent
