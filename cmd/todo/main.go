@@ -61,7 +61,7 @@ func main() {
 
 	case "completed", "c":
 		if len(args) < 3 {
-			fmt.Println("Umm WOt Broo !! run, doit <c/completed> [list | remove | nuke] ")
+			fmt.Println("Umm Wot Broo !! run, doit <c/completed> [<ls/list> | <rm/remove> | <n/nuke>] ")
 			os.Exit(1)
 		}
 		switch args[2] {
@@ -81,7 +81,7 @@ func main() {
 
 	case "trash", "t":
 		if len(args) < 3 {
-			fmt.Println("Umm WOt Broo !! run, doit <t/trash> [list | remove | nuke] ")
+			fmt.Println("Umm WOt Broo !! run, doit <t/trash> [<ls/list> | <rm/remove> | <n/nuke>] ")
 			os.Exit(1)
 		}
 		switch args[2] {
@@ -101,7 +101,7 @@ func main() {
 
 	case "ignored", "i":
 		if len(args) < 3 {
-			fmt.Println("Umm WOt Broo !! run, doit <i/ignored> [list | remove | nuke] ")
+			fmt.Println("Umm WOt Broo !! run, doit <i/ignored> [<ls/list> | <rm/remove> | <n/nuke>] ")
 			os.Exit(1)
 		}
 		switch args[2] {
