@@ -65,6 +65,9 @@ archives:
       doit_
       {{- title .Os }}_
       {{- .Arch }}
+    files:
+      - docs/man/doit.1
+      - LICENCE
     format_overrides:
       - goos: windows
         formats: [zip]
@@ -87,6 +90,7 @@ brews:
     description: "A sleek CLI Task manager tool built with Go & WASM SQLite3."
     install: |
       bin.install "doit"
+      man1.install "docs/man/doit.1"
 
 release:
   footer: >-
