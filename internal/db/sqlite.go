@@ -73,7 +73,7 @@ func findDoitDir() (string, error) {
 		doitPath := filepath.Join(dir, ".doit")
 		log.Println(doitPath)
 		if info, err := os.Stat(doitPath); err == nil && info.IsDir() {
-			log.Println("STat", info)
+			log.Printf("STat:%v", info)
 			return doitPath, nil
 		}
 
