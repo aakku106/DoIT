@@ -31,6 +31,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if args[1] == "init" {
+		initProject()
+		os.Exit(0)
+	}
+
 	db, err := db.NewSQLite()
 	if err != nil {
 		fmt.Println("Error: ", err)

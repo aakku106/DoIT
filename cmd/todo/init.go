@@ -1,9 +1,52 @@
 package main
 
-// what this shall do !!
-/*
-create the folder named .doit inside the parent dir
-now inside
-.doit/
-it needs to have doit.db
-*/
+import (
+	"errors"
+	"fmt"
+	"github.com/aakku106/DoIT/internal/db"
+	"os"
+	"path/filepath"
+)
+
+const (
+	RootDir = ".doit"
+	DirPerm = 0755
+)
+
+func initProject() {
+	fmt.Println("Init Called...")
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting working directory: %v\n", err)
+		os.Exit(1)
+	}
+
+	doitPath := filepath.Join(pwd, RootDir)
+
+	// 1. Check if .doit already exists
+	if _, err := os.Stat(doitPath); err == nil {
+		fmt.Fprintf(os.Stderr, "Error: already a doit repository (%s exists)\n", RootDir)
+		os.Exit(1)
+	} else if !errors.Is(err, os.ErrNotExist) {
+		fmt.Fprintf(os.Stderr, "Error checking status of %s: %v\n", RootDir, err)
+		os.Exit(1)
+	}
+
+	// 2. Create .doit folder
+	if err := os.MkdirAll(doitPath, DirPerm); err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating directory %s: %v\n", doitPath, err)
+		os.Exit(1)
+	}
+
+	// 3. Initialize SQLite database & apply tables
+	database, err := db.InitSQLite(doitPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error initializing database: %v\n", err)
+		// Clean up broken folder if database setup failed
+		os.RemoveAll(doitPath)
+		os.Exit(1)
+	}
+	defer database.Close() // this needed to be done in init process
+
+	fmt.Printf("Initialized empty doit repository in %s\n", doitPath)
+}
