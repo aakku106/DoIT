@@ -18,27 +18,27 @@ builds:
       - linux
       - windows
       - darwin
-      - freebsd
-      - openbsd
-      - netbsd
-      - dragonfly
-      - illumos
-      - solaris
-      - js
+#      - freebsd
+#      - openbsd
+#     - netbsd
+#      - dragonfly
+#      - illumos
+#      - solaris
+#      - js
     
     goarch:
       - amd64
       - arm64
-      - "386"
-      - arm
-      - mips
-      - mipsle
-      - mips64
-      - mips64le
-      - riscv64
-      - s390x
-      - ppc64le
-      - wasm
+ #     - "386"
+  #    - arm
+ #     - mips
+ #     - mipsle
+ #     - mips64
+  #    - mips64le
+   #   - riscv64
+    #  - s390x
+     # - ppc64le
+      #- wasm
 
     ignore:
       - goos: darwin
