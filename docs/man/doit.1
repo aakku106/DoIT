@@ -1,0 +1,182 @@
+.TH DOIT 1 "September 2026" "DoIT" "User Commands"
+.SH NAME
+doit \- a sleek CLI task manager tool built with Go and WASM SQLite3
+.SH SYNOPSIS
+.B doit
+.IR command " [" options ]
+.SH DESCRIPTION
+.B doit
+is a command-line todo/task manager that stores its data in a local SQLite
+database (see
+.B init
+and
+.B DBPATH
+below). Tasks live in one of four logical lists:
+.IR todos ,
+.IR completed ,
+.IR trash ,
+and
+.IR ignored .
+.SH INITIALIZATION
+Before using
+.B doit
+in a directory tree you must initialize a repository:
+.PP
+.B doit init
+.PP
+This creates a
+.B .doit/
+directory containing the SQLite database
+.B doit.db
+in the current working directory. Every later
+.B doit
+command looks for
+.B .doit/
+by starting from the current directory and walking upward, so commands will
+only work when run inside (or below) an initialized project.
+.SH COMMANDS
+.TP
+.BR init
+Create a new
+.B .doit
+repository in the current directory.
+.TP
+.BR add " | " a " " \fItask\fP
+Add a new todo. Exactly one task argument is accepted.
+.TP
+.BR list " | " ls
+List all active todos. Tasks are numbered starting from index 0; these
+indices (not database row ids) are the ids used by other commands.
+.TP
+.BR done " | " d " " \fIid\fP
+Mark the todo at list index
+.I id
+as done, moving it to the
+.IR completed
+list.
+.TP
+.BR remove " | " rm " " \fIid\fP
+Prompt for confirmation, then move the todo at list index
+.I id
+to the
+.IR trash
+list.
+.TP
+.BR completed " | " c " " \fIsubcommand\fP
+Operate on the completed list. Subcommands:
+.RS
+.TP
+.BR list " | " ls
+List completed tasks.
+.TP
+.BR remove " | " rm " " \fIid\fP
+Permanently delete the task at index
+.I id
+from the completed list (cannot be recovered).
+.TP
+.BR nuke " | " n
+Prompt for confirmation, then permanently clear all completed tasks.
+.RE
+.TP
+.BR trash " | " t " " \fIsubcommand\fP
+Operate on the trash list. Subcommands:
+.RS
+.TP
+.BR list " | " ls
+List tasks in trash.
+.TP
+.BR remove " | " rm " " \fIid\fP
+Permanently delete the task at index
+.I id
+from the trash (cannot be recovered).
+.TP
+.BR nuke " | " n
+Prompt for confirmation, then permanently clear the entire trash.
+.RE
+.TP
+.BR ignored " | " i " " \fIsubcommand\fP
+Operate on the ignored list. Subcommands:
+.RS
+.TP
+.BR list " | " ls
+List ignored tasks.
+.TP
+.BR remove " | " rm " " \fIid\fP
+Permanently delete the task at index
+.I id
+from the ignored list (cannot be recovered).
+.TP
+.BR nuke " | " n
+Prompt for confirmation, then permanently clear all ignored tasks.
+.RE
+.TP
+.BR move " | " mv " " \fI<t|c|i>\fP " " \fIid\fP " [" \fI<t|c|i>\fP "]"
+Move a task between the trash, completed, and ignored lists. The first
+source argument
+.I <t|c|i>
+selects the source list (one of
+.IR trash ,
+.IR completed ,
+.IR ignored
+or their single-letter aliases), and
+.I id
+is the 0-based index within that list. With no target argument the task is
+moved back to
+.IR todos .
+With an explicit target
+.I <t|c|i>
+it is moved to that list instead.
+.SH DBPATH
+By default
+.B doit
+writes its database to
+.B .doit/doit.db
+relative to the directory where
+.B doit init
+was run. The connection is opened with WAL journal mode and foreign keys
+enabled.
+.SH EXAMPLES
+.PP
+.nf
+.RS
+doit init
+doit add "buy milk"
+doit list
+doit d 0            # mark the first listed todo done
+doit c list         # show completed tasks
+doit t list         # show trashed tasks
+doit mv t 0 c       # move the first trashed task to completed
+.fi
+.RE
+.SH FILES
+.TP
+.B .doit/doit.db
+The SQLite database created by
+.BR "doit init" .
+.SH BUGS
+The empty
+.B sessionCall
+placeholder notifies nothing. Multi-session support is not yet implemented;
+the runtime session is hardcoded to
+.IR todo .
+.SH AUTHOR
+Adarasha Gaihre (aakku) <aakku@adarashagaihre.com.np>
+.SH HOME
+Website: https://adarashagaihre.com.np
+.br
+Source: https://github.com/aakku106/DoIT
+.SH COPYRIGHT
+Copyright (C) 2026 Adarasha Gaihre (aakku).
+.PP
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+.PP
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+.PP
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
