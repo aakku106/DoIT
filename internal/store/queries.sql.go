@@ -454,7 +454,7 @@ func (q *Queries) MoveTrashToCompleted(ctx context.Context, id int64) error {
 }
 
 const moveTrashToIgnored = `-- name: MoveTrashToIgnored :exec
-INSERT INTO completed (session,title)
+INSERT INTO ignored (session,title)
 SELECT t.session, t.title FROM trash AS t
 WHERE t.id = ?
 `
