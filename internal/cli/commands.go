@@ -354,7 +354,7 @@ func MoveIgnoredToCompleted(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit i ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <i/ignored> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -375,7 +375,7 @@ func MoveIgnoredToTrash(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit i ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <i/ignored> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
