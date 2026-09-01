@@ -27,8 +27,13 @@ data stays on your machine.
 ### Homebrew (macOS / Linux)
 
 ```sh
-brew install aakku106/homebrew-tap/doit
+brew tap aakku106/homebrew-tap
+brew install doit
 ```
+
+This uses the third-party `aakku106/homebrew-tap` repository. Review the
+formula before installing if you prefer to inspect third-party taps — you can
+see it at [`aakku106/homebrew-tap`](https://github.com/aakku106/homebrew-tap).
 
 ### From source
 
@@ -119,6 +124,22 @@ Run without building first:
 go run ./cmd/todo add "wash car"
 go run ./cmd/todo list
 ```
+
+### Dev build (`xdoit`)
+
+The repo includes a `dev-build.sh` helper that builds the binary and installs
+it to `~/go/bin/xdoit` (note the `x` prefix, so it won't shadow a real
+`doit` install):
+
+```sh
+./dev-build.sh
+xdoit add "test task"
+```
+
+> `xdoit` is a **development/testing build**. It is not versioned or
+> officially distributed, may be unstable, and is not recommended for
+> production use — use it after cloning the repo to verify the app works, or
+> simply use `go build` / `doit` from a release instead.
 
 ### Manpage
 

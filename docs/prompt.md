@@ -31,9 +31,9 @@ go run ./cmd/todo add "task"
 ```
 
 ## Release / CI
-- `.github/workflows/release.yml` + `.goreleaser.yaml`: cross-compiles `doit` for many OS/arch; on **`v*` tag pushes** builds, attaches archives to GitHub release, and publishes a Homebrew formula to `aakku106/homebrew-tap`. Needs `GITHUB_TOKEN` + `HOMEBREW_TAP_TOKEN` secrets.
+- `.github/workflows/release.yml` + `.goreleaser.yaml`: cross-compiles `doit` for Linux/macOS/Windows on amd64/arm64; on **`v*` tag pushes** builds, attaches archives to GitHub release, and publishes a Homebrew formula to `aakku106/homebrew-tap` (binary + manpage). Needs `GITHUB_TOKEN` + `HOMEBREW_TAP_TOKEN` secrets.
 - Manpage: `docs/man/doit.1`.
-- No README file currently.
+- README: `README.md` (root).
 
 ## State
 - `internal/todo/service.go`: unused stub.
