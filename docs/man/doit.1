@@ -1,6 +1,6 @@
 .TH DOIT 1 "September 2026" "DoIT" "User Commands"
 .SH NAME
-doit \- a sleek CLI task manager tool built with Go and WASM SQLite3
+doit \- A sleek CLI task manager tool built with Go and WASM SQLite3
 .SH SYNOPSIS
 .B doit
 .IR command " [" options ]
@@ -20,7 +20,7 @@ and
 .SH INITIALIZATION
 Before using
 .B doit
-in a directory tree you must initialize a repository:
+in a directory tree, you must initialize a repository:
 .PP
 .B doit init
 .PP
@@ -120,7 +120,7 @@ selects the source list (one of
 .IR ignored
 or their single-letter aliases), and
 .I id
-is the 0-based index within that list. With no target argument the task is
+is the 0-based index within that list. With no target argument, the task is
 moved back to
 .IR todos .
 With an explicit target
@@ -154,10 +154,7 @@ doit mv t 0 c       # move the first trashed task to completed
 The SQLite database created by
 .BR "doit init" .
 .SH BUGS
-The empty
-.B sessionCall
-placeholder notifies nothing. Multi-session support is not yet implemented;
-the runtime session is hardcoded to
+Multi-session support is not yet fully active; the runtime session is hardcoded to
 .IR todo .
 .SH AUTHOR
 Adarasha Gaihre (aakku) <aakku@adarashagaihre.com.np>
@@ -172,11 +169,3 @@ This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
 Software Foundation, either version 3 of the License, or (at your option)
 any later version.
-.PP
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-more details.
-.PP
-You should have received a copy of the GNU General Public License along
-with this program. If not, see <https://www.gnu.org/licenses/>.
