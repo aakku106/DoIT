@@ -16,7 +16,7 @@ func doneTodo(q *store.Queries, args []string) {
 	}
 	id, err := strconv.Atoi(args[2])
 	if err != nil || id < 0 {
-		fmt.Println(cli.Red, cli.Bold, "Enter valid id", err, cli.Reset)
+		fmt.Println(cli.Red, cli.Bold, "Enter valid id Run doit <ls/list> to view id. And than run doit <d/done> [id]", err, cli.Reset)
 	}
 	cli.DoneTodo(q, id)
 }
