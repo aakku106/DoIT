@@ -25,7 +25,11 @@ func main() {
 			if v[0] != '-' {
 				fmt.Printf("\nIndex:%d\t\tvalue: %s\n", i, v)
 				i++
+
 			}
 		}
+	}
+	if i == commaCount+1 {
+		fmt.Printf("\nAdding:%d\ttaks to todoList\n", i)
 	}
 }
