@@ -16,5 +16,7 @@ func add(q *store.Queries, args []string) {
 	fmt.Print("Adding:")
 	if len(args) == 3 {
 		call.AddTodo(q, args[2])
+	} else if len(args) > 3 {
+		// TODO:Work is going on on temp/main.go
 	}
 }
