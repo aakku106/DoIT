@@ -11,12 +11,19 @@ func main() {
 	if args[1] != "add" {
 		os.Exit(106)
 	}
-	if len(args) > 3 {
-		fmt.Println("Addign Multiple tasks to todo list")
-		i := 1 // just to know hou many times loop ran
-		for _, v := range args[2:] {
-			if v != "," {
-				fmt.Printf("\nIndex:%d\tvalue: %s\n", i, v)
+	if len(args) < 3 {
+		os.Exit(106)
+	}
+	fmt.Println("Addign Multiple tasks to todo list")
+	i := 0 // just to know hou many times loop ran
+	commaCount := 0
+	for _, v := range args[2:] {
+		if v == "," {
+			commaCount++
+		}
+		if v != "," {
+			if v[0] != '-' {
+				fmt.Printf("\nIndex:%d\t\tvalue: %s\n", i, v)
 				i++
 			}
 		}
