@@ -56,6 +56,6 @@ func extractMultipleTasks(args []string) ([][]string, error) {
 	}
 	taskGroups = append(taskGroups, currentGroup)
 
-	fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d", taskGroups, len(taskGroups), cap(taskGroups))
+	return taskGroups, nil
 
 }
