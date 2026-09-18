@@ -53,7 +53,7 @@ func extractMultipleTasks(args []string) ([][]string, error) {
 				return nil, fmt.Errorf("Comma Before any task")
 			}
 			taskGroups = append(taskGroups, currentGroup)
-			currentGroup = []string{}
+			currentGroup = currentGroup[:0] // I avoided using []string{}, cause it escapes to heap
 		} else {
 			currentGroup = append(currentGroup, val)
 		}
