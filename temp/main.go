@@ -24,15 +24,26 @@ func main() {
 
 	fmt.Println("Addign Multiple tasks to todo list")
 
+	val, err := extractMultipleTasks(args)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println(val)
+	fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d\n", val, len(val), cap(val))
+}
+
+func extractMultipleTasks(args []string) ([][]string, error) {
+
 	rawArgs := args[2:]
 
 	// Bucked for currentTask and Group of Current Task
 	taskGroups := make([][]string, 0, len(rawArgs)/2)
 	currentGroup := make([]string, 0, 2) // cap=2 cause, for now we only have 2 possible entrires{task,time}
+
 	for _, val := range rawArgs {
 		if val == "," {
 			if len(currentGroup) == 0 {
-				os.Exit(106) // Error: comma before any task
+				return nil, fmt.Errorf("Comma Before any task")
 			}
 			taskGroups = append(taskGroups, currentGroup)
 			currentGroup = []string{}
@@ -41,7 +52,7 @@ func main() {
 		}
 	}
 	if len(currentGroup) == 0 {
-		os.Exit(106) // Error: comma in last without any task.
+		return nil, fmt.Errorf("comma in last without any task.")
 	}
 	taskGroups = append(taskGroups, currentGroup)
 
