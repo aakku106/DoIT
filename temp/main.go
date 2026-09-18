@@ -13,7 +13,6 @@ type Task struct {
 }
 
 func main() {
-
 	args := os.Args
 
 	if args[1] != "add" {
@@ -30,6 +29,13 @@ func main() {
 		log.Panic(err)
 	}
 	fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d\n", val, len(val), cap(val))
+
+	t := Task{}
+	if val, err := t.sanitizeTask(val); err != nil {
+		log.Panic(err)
+	} else {
+		fmt.Println(val)
+	}
 }
 
 func extractMultipleTasks(args []string) ([][]string, error) {
