@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -18,29 +17,27 @@ func main() {
 
 	fmt.Println("Addign Multiple tasks to todo list")
 
-	i := 0
-	commaCount := 0
-	list := args[2:]
-	newTaskList := make([]string, 0, len(args[2:]))
-	// var newTaskList []string
-	//
-	for index, v := range list {
-		if v == "," && list[index+1][0] != '-' {
-			log.Println(list[i+1][0])
-			commaCount++
-		}
-		if v != "," && v[0] != '-' {
-			newTaskList = append(newTaskList, v)
-			i++
-		}
-		log.Println("loop: ", index, " done")
-	}
+	rawArgs := args[2:]
 
-	log.Println(newTaskList)
-	if i != commaCount+1 {
-		os.Exit(106)
+	// Bucked for currentTask and Group of Current Task
+	taskGroups := make([][]string, 0, len(rawArgs)/2)
+	currentGroup := make([]string, 0, 2) // cap=2 cause, for now we only have 2 possible entrires{task,time}
+	for _, val := range rawArgs {
+		if val == "," {
+			if len(currentGroup) == 0 {
+				os.Exit(106) // Error: comma before any task
+			}
+			taskGroups = append(taskGroups, currentGroup)
+			currentGroup = []string{}
+		} else {
+			currentGroup = append(currentGroup, val)
+		}
 	}
-	fmt.Printf("\nAdding:%d\ttaks to todoList\n", i)
-	fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d", newTaskList, len(newTaskList), cap(newTaskList))
+	if len(currentGroup) == 0 {
+		os.Exit(106) // Error: comma in last without any task.
+	}
+	taskGroups = append(taskGroups, currentGroup)
+
+	fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d", taskGroups, len(taskGroups), cap(taskGroups))
 
 }
