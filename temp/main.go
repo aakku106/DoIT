@@ -14,7 +14,7 @@ type Task struct {
 func main() {
 
 	args := os.Args
-	// fmt.Printf("Args: %v \nLength of arg: %d ", args, len(args))
+
 	if args[1] != "add" {
 		os.Exit(106)
 	}
