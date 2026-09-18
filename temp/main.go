@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -19,21 +20,23 @@ func main() {
 
 	i := 0
 	commaCount := 0
-	var newTaskList []string
-
-	for _, v := range args[2:] {
-		if v == "," {
+	list := args[2:]
+	newTaskList := make([]string, 0, len(args[2:]))
+	// var newTaskList []string
+	//
+	for index, v := range list {
+		if v == "," && list[index+1][0] != '-' {
+			log.Println(list[i+1][0])
 			commaCount++
 		}
-
-		if v != "," {
-			if v[0] != '-' {
-				newTaskList = append(newTaskList, v)
-				i++
-			}
+		if v != "," && v[0] != '-' {
+			newTaskList = append(newTaskList, v)
+			i++
 		}
-
+		log.Println("loop: ", index, " done")
 	}
+
+	log.Println(newTaskList)
 	if i != commaCount+1 {
 		os.Exit(106)
 	}
