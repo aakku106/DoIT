@@ -34,7 +34,7 @@ func main() {
 	if val, err := t.sanitizeTask(val); err != nil {
 		log.Panic(err)
 	} else {
-		fmt.Println(val)
+		fmt.Println("value ", val, "cap ", cap(val), "len ", len(val))
 	}
 }
 
@@ -73,7 +73,7 @@ func extractMultipleTasks(args []string) ([][]string, error) {
 // Title shall never start with , or -  everythign else is valid
 // Title shall never end with ,, everything else is valid
 func (t *Task) sanitizeTask(v [][]string) ([]Task, error) {
-	var task []Task
+	task := make([]Task, 0, len(v))
 
 	for _, value := range v {
 		_title := value[0]
@@ -93,11 +93,7 @@ func (t *Task) sanitizeTask(v [][]string) ([]Task, error) {
 			_time = strings.TrimPrefix(_time, "-t=")
 		}
 
-		r := Task{_title, _time}
-		task = append(task, r)
-	}
-	{
-		fmt.Printf("\ntask struct:\t%s\n", task)
+		task = append(task, Task{_title, _time})
 	}
 	return task, nil
 }
