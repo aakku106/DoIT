@@ -23,11 +23,11 @@ func add(q *store.Queries, args []string) {
 	// 	os.Exit(1)
 	// }
 	if len(args) == 3 {
-		fmt.Println("Adding:")
+		fmt.Printf("  Adding:\n\n")
 		call.AddTodo(q, args[2])
 	} else if len(args) > 3 {
 
-		fmt.Println("Adding Multiple Tasks:")
+		fmt.Printf("  Adding Multiple Tasks:\n\n")
 		val, err := extractMultipleTasks(args)
 		if err != nil {
 			log.Panic(err)
@@ -66,7 +66,7 @@ func extractMultipleTasks(args []string) ([][]string, error) {
 	}
 
 	if len(currentGroup) == 0 {
-		return nil, fmt.Errorf("comma in last without any task.")
+		return nil, fmt.Errorf("comma in last without any task.\n\n")
 	}
 	// pushing final task in group bucket
 	taskGroups = append(taskGroups, currentGroup)
@@ -85,7 +85,7 @@ func (t *Task) sanitizeTasks(v [][]string) ([]Task, error) {
 
 		_title := value[0]
 		if strings.HasPrefix(_title, "-") && strings.HasPrefix(_title, ",") {
-			return nil, fmt.Errorf("Task Name, shouldn't have presiding flag '-' or comma ',', but got '%s'\n", _title)
+			return nil, fmt.Errorf("Task Name, shouldn't have presiding flag '-' or comma ',', but got\t'%s'\n", _title)
 		}
 
 		var _time string
@@ -98,7 +98,7 @@ func (t *Task) sanitizeTasks(v [][]string) ([]Task, error) {
 		}
 
 		if len(_time) != 0 && !strings.HasPrefix(_time, "-t=") {
-			return nil, fmt.Errorf("Dead line time should be given as -t=")
+			return nil, fmt.Errorf("Dead line time should be given as -t=\n\n")
 		} else {
 			_time = strings.TrimPrefix(_time, "-t=")
 		}

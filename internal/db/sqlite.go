@@ -62,14 +62,12 @@ func InitSQLite(doitDir string) (*sql.DB, error) {
 
 // Helper function to search upwards for the .doit folder (Stops at root dir)
 func findDoitDir() (string, error) {
-	fmt.Println("FIndingDIR")
 	cwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 
 	dir := cwd
-	fmt.Println("ENterign finding looooooop-----------")
 	for {
 		doitPath := filepath.Join(dir, ".doit")
 		if info, err := os.Stat(doitPath); err == nil && info.IsDir() {
