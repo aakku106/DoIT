@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
+	//"os"
 	"strings"
 
 	call "github.com/aakku106/DoIT/internal/cli"
@@ -24,20 +24,20 @@ func add(q *store.Queries, args []string) {
 	if len(args) == 3 {
 		call.AddTodo(q, args[2])
 	} else if len(args) > 3 {
-		// TODO:Work is going on on temp/main.go
 
 		val, err := extractMultipleTasks(args)
 		if err != nil {
 			log.Panic(err)
 		}
 		t := Task{}
-		if val, err := t.sanitizeTasks(val); err != nil {
+		if value, err := t.sanitizeTasks(val); err != nil {
 			log.Panic(err)
 		} else {
-			fmt.Println("value ", val, "cap ", cap(val), "len ", len(val))
-			// TODO: Write i db
-		}
 
+			for _, v := range value {
+				call.AddTodo(q, v.Title)
+			}
+		}
 	}
 }
 
