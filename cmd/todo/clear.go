@@ -24,9 +24,10 @@ func clearTodo(q *store.Queries) {
 			cli.ClearTodos(q)
 		}
 		fmt.Println("CLEARING TODO LIST ABORTED !!!")
+	} else {
+		fmt.Println("You were supposed to select between Y and N")
+		os.Exit(1)
 	}
-	fmt.Println("You were supposed to select between Y and N")
-	os.Exit(1)
 }
 
 func clearCompleted(q *store.Queries) {
@@ -44,9 +45,10 @@ func clearCompleted(q *store.Queries) {
 			cli.ClearCompleted(q)
 		}
 		fmt.Println("CLEARING COMPLETED LIST ABORTED !!!")
+	} else {
+		fmt.Println("You were supposed to select between Y and N")
+		os.Exit(1)
 	}
-	fmt.Println("You were supposed to select between Y and N")
-	os.Exit(1)
 }
 
 func clearTrash(q *store.Queries) {
@@ -64,9 +66,10 @@ func clearTrash(q *store.Queries) {
 			cli.ClearCompleted(q)
 		}
 		fmt.Println("CLEARING TRASH LIST ABORTED !!!")
+	} else {
+		fmt.Println("You were supposed to select between Y and N")
+		os.Exit(1)
 	}
-	fmt.Println("You were supposed to select between Y and N")
-	os.Exit(1)
 }
 
 func clearIgnored(q *store.Queries) {
@@ -84,7 +87,8 @@ func clearIgnored(q *store.Queries) {
 			cli.ClearCompleted(q)
 		}
 		fmt.Println("CLEARING IGNORED LIST ABORTED !!!")
+	} else {
+		fmt.Println("You were supposed to select between Y and N")
+		os.Exit(1)
 	}
-	fmt.Println("You were supposed to select between Y and N")
-	os.Exit(1)
 }

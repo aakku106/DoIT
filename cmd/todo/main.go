@@ -59,6 +59,9 @@ func main() {
 	case "remove", "rm": // command
 		removeTodo(query, args)
 
+	case "nuke", "n": //command
+		clearTodo(query)
+
 	case "completed", "c": // This is table
 		if len(args) < 3 {
 			fmt.Println("Umm Wot Broo !! run, doit <c/completed> [<ls/list> | <rm/remove> | <n/nuke>] ")
