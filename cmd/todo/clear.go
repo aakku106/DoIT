@@ -17,13 +17,14 @@ func clearTodo(q *store.Queries) {
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
 	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS NuKe/N")
+		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
 		var b string
 		fmt.Scanf("%s", &b)
-		if b == "YeS NuKe" {
+		if b == "YeS_NuKe" {
 			cli.ClearTodos(q)
+		} else {
+			fmt.Println("CLEARING TODO LIST ABORTED !!!")
 		}
-		fmt.Println("CLEARING TODO LIST ABORTED !!!")
 	} else {
 		fmt.Println("You were supposed to select between Y and N")
 		os.Exit(1)
@@ -38,10 +39,10 @@ func clearCompleted(q *store.Queries) {
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
 	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING COMPLETED LIST:", cli.Reset, "YeS NuKe/N")
+		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
 		var b string
 		fmt.Scanf("%s", &b)
-		if b == "YeS NuKe" {
+		if b == "YeS_NuKe" {
 			cli.ClearCompleted(q)
 		}
 		fmt.Println("CLEARING COMPLETED LIST ABORTED !!!")
@@ -59,10 +60,10 @@ func clearTrash(q *store.Queries) {
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
 	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING TRASH LIST:", cli.Reset, "YeS NuKe/N")
+		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
 		var b string
 		fmt.Scanf("%s", &b)
-		if b == "YeS NuKe" {
+		if b == "YeS_NuKe" {
 			cli.ClearCompleted(q)
 		}
 		fmt.Println("CLEARING TRASH LIST ABORTED !!!")
@@ -80,10 +81,10 @@ func clearIgnored(q *store.Queries) {
 	if unicode.ToLower(a) == 'n' {
 		os.Exit(0)
 	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING IGNORED LIST:", cli.Reset, "YeS NuKe/N")
+		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
 		var b string
 		fmt.Scanf("%s", &b)
-		if b == "YeS NuKe" {
+		if b == "YeS_NuKe" {
 			cli.ClearCompleted(q)
 		}
 		fmt.Println("CLEARING IGNORED LIST ABORTED !!!")
