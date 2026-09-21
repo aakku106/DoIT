@@ -93,11 +93,7 @@ func (t *Task) sanitizeTasks(v [][]string) ([]Task, error) {
 			_time = value[1]
 		}
 
-		{
-			fmt.Printf("\nTitle:%s\ttime:%s", _title, _time)
-		}
-
-		if len(_time) == 0 {
+		if len(_time) == 0 && DeadMissingWarningMessage {
 			fmt.Println("DeadLine time not assigned, you can assigne deadline on any task 'doit add TaskName -t=2h , \"Another Task\" -t=1mo '")
 		}
 
