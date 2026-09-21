@@ -22,16 +22,19 @@ func main() {
 		os.Exit(106)
 	}
 
-	fmt.Println("Addign Multiple tasks to todo list")
-
+	{
+		fmt.Println("Addign Multiple tasks to todo list")
+	}
 	val, err := extractMultipleTasks(args)
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d\n", val, len(val), cap(val))
 
+	{
+		fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d\n", val, len(val), cap(val))
+	}
 	t := Task{}
-	if val, err := t.sanitizeTask(val); err != nil {
+	if val, err := t.sanitizeTasks(val); err != nil {
 		log.Panic(err)
 	} else {
 		fmt.Println("value ", val, "cap ", cap(val), "len ", len(val))
@@ -72,14 +75,14 @@ func extractMultipleTasks(args []string) ([][]string, error) {
 // For now we only check for title and time.
 // Title shall never start with , or -  everythign else is valid
 // Title shall never end with ,, everything else is valid
-func (t *Task) sanitizeTask(v [][]string) ([]Task, error) {
+func (t *Task) sanitizeTasks(v [][]string) ([]Task, error) {
 	task := make([]Task, 0, len(v))
 
 	for _, value := range v {
 
 		_title := value[0]
-		if strings.HasPrefix(_title, "-") {
-			return nil, fmt.Errorf("Expected task name, got flag '%s'\n", _title)
+		if strings.HasPrefix(_title, "-") && strings.HasPrefix(_title, ",") {
+			return nil, fmt.Errorf("Task Name, shouldn't have presiding flag '-' or comma ',', but got '%s'\n", _title)
 		}
 
 		var _time string
@@ -92,7 +95,7 @@ func (t *Task) sanitizeTask(v [][]string) ([]Task, error) {
 		}
 
 		if len(_time) == 0 {
-			fmt.Println("DeadLine time not assigned")
+			fmt.Println("DeadLine time not assigned, you can assigne deadline on any task 'doit add TaskName -t=2h , \"Another Task\" -t=1mo '")
 		}
 
 		if len(_time) != 0 && !strings.HasPrefix(_time, "-t=") {
