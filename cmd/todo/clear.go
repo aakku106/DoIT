@@ -9,6 +9,7 @@ import (
 	"github.com/aakku106/DoIT/internal/store"
 )
 
+// TODO: Fix logic here
 func clearTodo(q *store.Queries) {
 	fmt.Println(cli.Red, "___This Clear all Tasks From Todo list, Task Cannot be Retrived Again !!!___", cli.Reset)
 	fmt.Println(cli.Red, "---Are you sure You want To Clear Todo :", cli.Reset, "Y/N")
@@ -20,7 +21,9 @@ func clearTodo(q *store.Queries) {
 		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
 		var b string
 		fmt.Scanf("%s", &b)
-		if b == "YeS_NuKe" {
+		if b == "n" || b == "N" {
+			fmt.Println("CLEARING TODO LIST ABORTED !!!")
+		} else if b == "YeS_NuKe" {
 			cli.ClearTodos(q)
 		} else {
 			fmt.Println("CLEARING TODO LIST ABORTED !!!")
