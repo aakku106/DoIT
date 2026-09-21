@@ -11,7 +11,6 @@ import (
 )
 
 func AddTodo(query *store.Queries, title string) {
-	fmt.Printf("\t%s\n", title)
 	param := store.CreateTodoParams{
 		Title:     title,
 		Session:   "todo",
