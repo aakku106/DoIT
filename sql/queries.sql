@@ -113,6 +113,9 @@ WHERE ignored.id = ?;
 DELETE FROM trash
 WHERE trash.id = ?;
 
+-- name: ClearTodo :exec
+DELETE FROM todos;
+
 -- name: ClearTrash :exec
 DELETE FROM trash;
 
