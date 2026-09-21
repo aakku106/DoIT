@@ -22,11 +22,12 @@ func add(q *store.Queries, args []string) {
 	// 	fmt.Println(call.Cyan, "Specify what to add !, run exactly doit <a/add> your task", call.Reset)
 	// 	os.Exit(1)
 	// }
-	fmt.Print("Adding:")
 	if len(args) == 3 {
+		fmt.Println("Adding:")
 		call.AddTodo(q, args[2])
 	} else if len(args) > 3 {
 
+		fmt.Println("Adding Multiple Tasks:")
 		val, err := extractMultipleTasks(args)
 		if err != nil {
 			log.Panic(err)
@@ -35,7 +36,6 @@ func add(q *store.Queries, args []string) {
 		if value, err := t.sanitizeTasks(val); err != nil {
 			log.Panic(err)
 		} else {
-
 			for _, v := range value {
 				call.AddTodo(q, v.Title)
 			}
