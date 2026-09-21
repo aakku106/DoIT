@@ -30,14 +30,12 @@ func main() {
 		log.Panic(err)
 	}
 
-	{
-		fmt.Printf("\ntodoList:%v,\tLen:%d,\tCap:%d\n", val, len(val), cap(val))
-	}
 	t := Task{}
-	if val, err := t.sanitizeTasks(val); err != nil {
+	if value, err := t.sanitizeTasks(val); err != nil {
 		log.Panic(err)
 	} else {
-		fmt.Println("value ", val, "cap ", cap(val), "len ", len(val))
+		fmt.Println("value ", value, "cap ", cap(value), "len ", len(value), " t ", t)
+		fmt.Println("value ", val, "cap ", cap(val), "len ", len(val), " t ", t)
 	}
 }
 
