@@ -76,17 +76,25 @@ func (t *Task) sanitizeTask(v [][]string) ([]Task, error) {
 	task := make([]Task, 0, len(v))
 
 	for _, value := range v {
+
 		_title := value[0]
-		_time := value[1]
-		{
-			fmt.Printf("\nTitle:%s\ttime:%s", _title, _time)
-		}
 		if strings.HasPrefix(_title, "-") {
 			return nil, fmt.Errorf("Expected task name, got flag '%s'\n", _title)
 		}
+
+		var _time string
+		if len(value) > 1 {
+			_time = value[1]
+		}
+
+		{
+			fmt.Printf("\nTitle:%s\ttime:%s", _title, _time)
+		}
+
 		if len(_time) == 0 {
 			fmt.Println("DeadLine time not assigned")
 		}
+
 		if len(_time) != 0 && !strings.HasPrefix(_time, "-t=") {
 			return nil, fmt.Errorf("Dead line time should be given as -t=")
 		} else {
