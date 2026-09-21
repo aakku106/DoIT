@@ -41,6 +41,7 @@ func main() {
 	}
 }
 
+// Extract Tasks and DeadLine from given to task or group of tasks.
 func extractMultipleTasks(args []string) ([][]string, error) {
 
 	rawArgs := args[2:]
