@@ -21,7 +21,7 @@ func clearTodo(q *store.Queries) {
 		var b string
 		fmt.Scanf("%s", &b)
 		if b == "YeS NuKe" {
-			cli.Clear(q)
+			cli.ClearTodos(q)
 		}
 		fmt.Println("CLEARING TODO LIST ABORTED !!!")
 	}
