@@ -59,6 +59,8 @@ func clearTodo(q *store.Queries) {
 	}
 }
 
+// TODO: Need to do same fro all other tables like todos table for nuke to work
+
 func clearCompleted(q *store.Queries) {
 	fmt.Println(cli.Red, "___This Clear all Tasks From Completed list, Task Cannot be Retrived Again !!!___", cli.Reset)
 	fmt.Println(cli.Red, "---Are you sure You want To Clear Completed :", cli.Reset, "Y/N")
