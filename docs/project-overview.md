@@ -1,21 +1,24 @@
 # DoIT Project Overview
 
+> **Created by** Adarasha Gaihre (aakku106) on 2026-09-01 23:05 NPT (+0545)
+> **Last updated by** Adarasha Gaihre (aakku106) on 2026-09-25 23:45 NPT (+0545)
+
 ## What this project is
 
-A Go CLI todo app backed by SQLite (WASM-based via `ncruces/go-sqlite3`). It manages tasks across four logical tables: `todos`, `completed`, `trash`, `ignored`, with `id INTEGER PRIMARY KEY` plus a `session` column (hardcoded to `"todo"` everywhere; multi-session is stubbed but not implemented).
+A Go CLI todo app backed by SQLite (WASM-based via `ncruces/go-sqlite3`). It manages tasks across four logical tables: `todos`, `completed`, `trash`, `ignored`, each with `id INTEGER PRIMARY KEY` plus a `session` column (hardcoded to `"todo"` everywhere; multi-session is stubbed but not implemented).
 
 Key tech:
-- SQLite for storage via the `ncruces/go-sqlite3` driver (see `go.mod`).
-- `sqlc` generates a typed Go query layer from `sql/schema.sql` + `sql/queries.sql`.
+- SQLite for storage via the `ncruces/go-sqlite3` driver (see `go.mod`), opened with `CGO_ENABLED=0`.
+- `sqlc` generates a typed Go query layer from `sql/schema.sql` + `sql/queries.sql` into `internal/store/`. Current generated output identifies **sqlc v1.31.1**.
 - Schema is embedded into the binary as `sql.SchemaSQLite` via `//go:embed schema.sql` in `sql/assects.go`.
 
 ## Main architecture
 
 Runtime flow:
 
-1. `cmd/todo/main.go` reads CLI args and connects to the DB.
-2. If the first arg is `init`, it creates a `.doit/` directory and DB (`initProject`).
-3. Otherwise it opens the DB via `db.NewSQLite()`, creates `store.Queries` with `store.New(db)`, and routes the subcommand.
+1. `cmd/todo/main.go` reads CLI args. With no args it prints `Bro what >???<` and exits 1.
+2. If the first arg is `init`, it creates a `.doit/` directory and DB (`initProject`) and exits before any DB lookup.
+3. Otherwise it opens the DB via `db.NewSQLite()`, creates `store.Queries` with `store.New(db)`, and routes the subcommand in a `switch` over `args[1]`.
 4. CLI handlers in `internal/cli` call generated `store` query methods.
 5. Store layer runs SQL against SQLite.
 
@@ -26,87 +29,117 @@ Dependency chain:
 
 ### DB location / init
 
-- `db.NewSQLite()` walks **upward from cwd** looking for a `.doit/` directory (see `findDoitDir` in `internal/db/sqlite.go`). If none is found it errors "not a doit repository (run 'doit init' first)".
-- `doit init` creates `.doit/` and `doit.db` (not `todo.db`), applying the embedded schema.
+- `db.NewSQLite()` walks **upward from cwd** looking for a `.doit/` directory (see `findDoitDir` in `internal/db/sqlite.go`). If none is found it errors `not a doit repository (run 'doit init' first)`.
+- `doit init` creates `.doit/` and `doit.db` (not `todo.db`), applies the embedded schema, and removes the directory again if DB setup fails. It refuses to run if `.doit/` already exists in the current directory.
 - Commands therefore must be run inside (or below) a project that has been `doit init`'d.
 - The DB opens with `_journal_mode=WAL&_foreign_keys=on`.
+- **The schema is only ever applied by `doit init`.** Normal DB opening does not migrate or upgrade, so there is no path to evolve an existing database.
 
 ### Commands (routing in `cmd/todo/main.go`)
 
 - `init`: create `.doit/` + `doit.db` + schema.
-- `add | a <task>`: create a todo.
+- `add | a <task...>`: create one or more todos (see "Adding tasks" below).
 - `list | ls`: list todos.
 - `done | d <id>`: mark a todo done (moves to `completed`).
-- `remove | rm <id>`: move a todo to `trash`.
-- `completed | c [list|remove|nuke]`: operate on `completed`.
-- `trash | t [list|remove|nuke]`: operate on `trash`.
-- `ignored | i [list|remove|nuke]`: operate on `ignored`.
-- `move | mv <t|c|i> <id> <t|c|i>`: move items between trash/completed/ignored.
-- Anything else falls through to `sessionCall(args)`, an empty placeholder in `cmd/todo/session.go`.
+- `remove | rm <id>`: move a todo to `trash` after a `Y/N` prompt.
+- `nuke | n`: permanently clear the **todos** list after a two-step confirmation.
+- `completed | c [list|remove|nuke]`, `trash | t [...]`, `ignored | i [...]`: operate on those tables.
+- `move | mv <t|c|i> <id> [t|c|i]`: move items between trash/completed/ignored (default target is `todos`).
+- Anything else falls through to `sessionCall(args)`, an empty placeholder in `cmd/todo/session.go` (a bare unknown command prints `Bro what >???<` and exits 1; with extra args it prints `Session cli` and does nothing).
+
+There is no `-h`/`--help` or version flag; subcommand arity is validated per-file in `cmd/todo/*.go`.
+
+### Adding tasks (multi-task mode)
+
+`cmd/todo/add.go` supports one task or many:
+
+- `len(args) == 3` (exactly one task argument) -> single add.
+- `len(args) > 3` -> **multi-task mode**. `extractMultipleTasks(args)` splits `args[2:]` into groups on any argument that is exactly `","` (so the comma must be whitespace-delimited or quoted on its own). A leading comma or a trailing comma is an error.
+- `(*Task).sanitizeTasks(groups)` turns each group into a `Task{Title, Time}`, taking `value[0]` as the title and `value[1]` (if present) as a deadline that **must** be prefixed `-t=`.
+- The parsed deadline is then thrown away: `call.AddTodo(q, v.Title)` only passes the title, and `AddTodo` always sets `ExpiresAt: sql.NullTime{Valid: false}`. Expiration is not enforced anywhere.
+- Failures are surfaced with `log.Panic`, so malformed input produces a panic + stack trace (exit 2) rather than a clean error.
+- `const DeadMissingWarningMessage bool = false` gates the "deadline not assigned" hint, so it is currently never printed.
+- With no task at all (`doit add`), the validation block is commented out, so the command prints nothing and exits 0.
+- `add` prints the **database row id** under an `ID:` heading. That is *not* the index other commands take.
+
+### Confirmation flows
+
+- `remove`/`rm` (todos and the per-table `remove` subcommands): single `Y/N` prompt read with `fmt.Scanf` into a rune, compared with `unicode.ToLower`. Anything other than y/n is a fatal `wott???`.
+- `nuke` (all four lists, in `cmd/todo/clear.go`): two-step. `bufio.NewReader(os.Stdin)` reads a `(Y/N)?` prompt that accepts **strictly uppercase `Y`** (`n`/`N` cancels, empty input is `Invalid selection.`, anything else is rejected), then requires an exact case-sensitive typed phrase. `clearTodo`, `clearCompleted`, `clearTrash`, and `clearIgnored` are otherwise identical copies. Phrases: `YeS NuKe ToDos`, `YeS NuKe CoMpleteD`, `YeS NuKe TrAsH`, `YeS NuKe IgNoreD`. All paths `return` rather than `os.Exit`, so exit status is 0 even when cancelled or aborted.
 
 ### Important: CLI IDs are display indices, not DB row IDs
 
-`done`, `remove`, and the `completed/trash/ignored` remove commands take a 0-based list-index (as printed by `ls`), which the handlers map to a real DB id via `ListTodoIDs`/`ListCompletedIDs`/`ListTrashIDs`/`ListIgnoredIDs` before acting. Don't pass DB row ids at the CLI.
+`done`, `remove`, `move`, and the `completed/trash/ignored` remove commands take a 0-based list-index (as printed by `ls`), which the handlers map to a real DB id via `ListTodoIDs`/`ListCompletedIDs`/`ListTrashIDs`/`ListIgnoredIDs` before acting. Don't pass DB row ids at the CLI. Ordering has no secondary tie-breaker, so equal timestamps can reorder between calls — which makes the index->id mapping racy if the list is mutated concurrently.
 
 ## File-by-file
 
-### Entrypoint and per-command filers
+### Entrypoint and per-command files
 
 - `cmd/todo/main.go` — routing and DB bootstrap.
-- `cmd/todo/init.go` — `doit init`.
-- `cmd/todo/add.go`, `list.go`, `done.go`, `remove.go`, `move.go`, `clear.go` — thin arg-validation wrappers that call `internal/cli` handlers. Note `add.go` requires exactly one task arg (`len(args) == 3`).
-- `cmd/todo/session.go` — `sessionCall` placeholder (empty).
+- `cmd/todo/init.go` — `doit init`; defines `RootDir = ".doit"` and `DirPerm = 0755`.
+- `cmd/todo/add.go` — `add`, plus the `Task` struct, `extractMultipleTasks`, `sanitizeTasks`, and `DeadMissingWarningMessage`.
+- `cmd/todo/list.go` — `listTodo`/`listCompleted`/`listTrash`/`listIgnored`. All four print `\033[H\033[2J` (home + clear screen) before listing, so scrollback is not preserved.
+- `cmd/todo/done.go` — `doneTodo` wrapper.
+- `cmd/todo/remove.go` — `removeTodo`, `removeCompleted`, `removeTrash`, `removeIgnored`, each with its own `Y/N` prompt.
+- `cmd/todo/clear.go` — the four `nuke` confirmation flows.
+- `cmd/todo/move.go` — `handleTrashMove`, `handleComletedMove` (sic), `handleIgnoredMove`.
+- `cmd/todo/session.go` — `sessionCall` placeholder: a `// TODO: Implement sessions` comment and an empty body.
+- `cmd/todo/AgenticWork.md` — running log of agent-assisted changes (Entry 001 covers the `clear.go` nuke rework).
 
 ### CLI handlers
 
-- `internal/cli/commands.go` — `AddTodo`, `ListTodos`, `DoneTodo`, `RemoveTodo`, plus completed/trash/ignored list/remove/clear and `Move*` helpers.
-- `internal/cli/utlitues.go` — ANSI color/style constants (`Bold`, `Dim`, `Red`, `Green`, `Yellow`, `Blue`, `Cyan`, `White`, `Reset`).
+- `internal/cli/commands.go` — `AddTodo`, `ListTodos`/`ListCompleted`/`ListTrash`/`ListIgnored`, `DoneTodo`, `RemoveTodo`, `RemoveCompleted`/`RemoveTrash`/`RemoveIgnored`, the `Move*` family (9 helpers), and `ClearTodos`/`ClearCompleted`/`ClearIgnored`/`ClearTrash`. The `Clear*` wrappers discard the returned error and do nothing else.
+- `internal/cli/utlitues.go` (sic) — ANSI color/style constants (`Reset`, `Bold`, `Dim`, `Red`, `Green`, `Yellow`, `Blue`, `Cyan`, `White`).
 
 ### DB layer
 
-- `internal/db/sqlite.go` — `NewSQLite()` (find `.doit/` upward, open DB), `InitSQLite()` (create DB + run embedded schema), and `findDoitDir()`.
+- `internal/db/sqlite.go` — `NewSQLite()` (find `.doit/` upward, open DB), `InitSQLite()` (create DB + run embedded schema), `findDoitDir()`, and `DbName = "doit.db"`. Debug prints that used to be in `findDoitDir` have been removed.
 
 ### Generated SQL layer (sqlc output — do not hand-edit)
 
-- `internal/store/db.go` — query wrapper / DBTX interface.
-- `internal/store/models.go` — generated model structs.
+- `internal/store/db.go` — query wrapper / `DBTX` interface.
+- `internal/store/models.go` — `Todo`, `Completed`, `Trash`, `Ignored` model structs.
 - `internal/store/querier.go` — generated `Querier` interface.
-- `internal/store/queries.sql.go` — implementations: `CreateTodo`, `ListTodos`, `ListTodoIDs`, `ListCompleted`/`ListTrash`/`ListIgnored` (+ ID-list helpers), `CompleteTodoTransaction`, `TrashTodoTransaction`, `Move*` helpers, `DeleteFrom*`, `Clear*`.
-
-### Stub / in-progress
-
-- `internal/todo/service.go` — a `Service` struct wrapping `*store.Queries`, not yet used by the entrypoint/CLI.
+- `internal/store/queries.sql.go` — implementations. Notable groups:
+  - Create/list: `CreateTodo`, `ListTodos`, `ListTodoIDs`, and the `ListCompleted`/`ListTrash`/`ListIgnored` (+ `*IDs`) pairs.
+  - Copy helpers named `*Transaction`: `CompleteTodoTransaction`, `TrashTodoTransaction`, and the `Move*` helpers (`MoveCompletedTo[Trash|Ignored]`, `MoveTrashTo[Completed|Ignored]`, `MoveIgnoredTo[Completed|Trash]`, plus the no-target `Move*To` variants that write back to `todos`).
+  - Deletes: `DeleteFromTodos`/`DeleteFromCompleted`/`DeleteFromIgnored`/`DeleteFromTrash`.
+  - Clears: `ClearTodo`, `ClearTrash`, `ClearCompleted`, `ClearIgnored` — all unscoped `DELETE FROM <table>` with no session filter.
 
 ### SQL definitions (source of truth for sqlc)
 
-- `sql/schema.sql` — defines `todos`, `completed`, `ignored`, `trash`.
+- `sql/schema.sql` — defines `todos` (`created_at`, `expires_at`), `completed` (`completed_at`), `ignored` (`expired_at`), `trash` (`created_at`, `removed_at`).
 - `sql/queries.sql` — named queries for create/list/move/delete/clear across the four tables.
-- `sql/assects.go` — embeds `schema.sql` as `SchemaSQLite` for runtime init.
+- `sql/assects.go` (sic) — embeds `schema.sql` as `SchemaSQLite` for runtime init.
 
 ### Migrations (stale)
 
 - `migrations/001_init.sql` is **out of date / not used** at runtime. The runtime applies the embedded schema from `sql/schema.sql` instead. Prefer editing `sql/schema.sql` + `sql/queries.sql` and regenerating.
 
-### Sandbox / not part of the app
+### Stub / in-progress / not part of the app
 
-- `temp/` — experimental scratch code, not on the main runtime path.
+- `internal/todo/service.go` — a 7-line `Service` struct wrapping `*store.Queries`. Nothing imports the package.
+- `temp/` — experimental scratch code (`temp/main.go` is a standalone copy of the multi-task parsing logic) and `temp/CAt/` (empty). Not on the main runtime path.
 
 ## Release & distribution
 
-- `.goreleaser.yaml` — builds the `doit` binary for Linux, Windows, and macOS on `amd64`/`arm64` with `CGO_ENABLED=0`, `-s -w` ldflags. Archives as `tar.gz` (`.zip` on Windows), including the manpage `docs/man/doit.1` and `LICENCE`. The `brews` section publishes a Homebrew formula to the **`aakku106/homebrew-tap`** repo (token from `HOMEBREW_TAP_TOKEN`), installing binary + manpage (`bin.install "doit"`, `man1.install "docs/man/doit.1"`).
-- `.github/workflows/release.yml` — GoReleaser CI. Triggers on **tag pushes matching `v*`**. Runs `goreleaser release --clean`; needs `GITHUB_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets.
+- `.goreleaser.yaml` — builds the `doit` binary for Linux, Windows, and macOS on `amd64`/`arm64` with `CGO_ENABLED=0` and `-s -w` ldflags. Archives as `tar.gz` (`.zip` on Windows) named `doit_<Os>_<Arch>`, including `docs/man/doit.1` and `LICENCE`. The `brews` section publishes a Homebrew formula to **`aakku106/homebrew-tap`** (token from `HOMEBREW_TAP_TOKEN`), installing binary + manpage (`bin.install "doit"`, `man1.install "docs/man/doit.1"`).
+- `.github/workflows/release.yml` — GoReleaser CI on pushed tags matching `v*`. Uses floating `go-version: stable` and `version: latest`; runs `goreleaser release --clean`; needs `GITHUB_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets with contents/packages write and tap write access.
 - Release flow: tag a commit `vX.Y.Z` and push; the workflow builds, attaches archives to the GitHub release, and updates the Homebrew tap.
+- GoReleaser's `before` hook runs `go mod tidy` but CI never commits or verifies the result — run `go mod tidy` yourself before tagging, and make sure `sqlc generate` and `go build ./cmd/todo` are current first.
 - `dist/` is the build output dir (gitignored).
 
 ## How sqlc fits in
 
-`sqlc.yml` -> schema `sql/schema.sql`, queries `sql/queries.sql`, output `internal/store`.
+`sqlc.yml` -> schema `sql/schema.sql`, queries `sql/queries.sql`, output `internal/store`, `emit_json_tags: true`, `emit_interface: true`.
 
 After editing any SQL file, regenerate with:
 
 ```bash
 sqlc generate
 ```
+
+The `sqlc` binary is not pinned by the repo, but the committed output was generated with **v1.31.1** — use that version to avoid unrelated churn.
 
 Rule of thumb:
 - Edit SQL files in `sql/` for DB/query behavior.
@@ -115,25 +148,34 @@ Rule of thumb:
 
 Generated API notes:
 - `CreateTodo` takes a `CreateTodoParams` struct (`Title`, `Session`, `ExpiresAt`).
-- `ListTodos` and other list queries require a `session` string (the code passes `"todo"`).
-- Transaction helpers (`CompleteTodoTransaction`, `TrashTodoTransaction`, `Move*`) move rows between tables; CLI handlers then delete from the source table.
+- All `List*` queries require a `session` string (the code passes `"todo"`).
+- The `*Transaction` and `Move*` helpers only **copy** a row into the destination table; the caller then deletes it from the source with a separate `DeleteFrom*` call. Despite the names, none of these start a database transaction, so a failure between the two statements duplicates the task.
 
 ## Current gaps & maintenance notes
 
-1. Argument parsing is duplicated across `cmd/todo/*.go` wrappers — could be consolidated into a helper.
-2. Migrations vs embedded schema: runtime uses the embedded schema; `migrations/` is stale. Pick one strategy.
-3. Session parameter: `session` is hardcoded to `"todo"` in every call; multi-session would need a global flag/env var and real `sessionCall`.
-4. No tests or linter config in the repo (CI exists only as the GoReleaser release workflow — see "Release & distribution" below). Adding tests around `internal/cli` and store transactions would protect refactors.
-5. `internal/todo/service.go` is unused.
-6. `internal/db/sqlite.go` contains debug `fmt.Println`/`log.Println` output (e.g. "FIndingDIR", "ENterign finding looooooop-----------").
+1. **Bug: `trash remove` targets the wrong table.** `removeTrash` in `cmd/todo/remove.go` calls `cli.RemoveCompleted`, so `doit t rm <id>` reports "successfully deleted" while the trashed row stays put. (The parallel `nuke` bug for `trash` and `ignored` was fixed in the `clear.go` rework; this one was not.)
+2. **Bug: off-by-one bounds checks.** Every handler tests `len(dbId) < id` instead of `<=`, so an index equal to the list length slips through and panics on `dbId[id]` (exit 2) or, in the empty-list branch ordering, silently acts on the wrong row.
+3. **Bug: `done` ignores an unparsable id.** `cmd/todo/done.go` prints an "Enter valid id" warning on a `strconv.Atoi` failure but has no `os.Exit`/`return`, so it falls through to `cli.DoneTodo(q, 0)` and completes the first task. (`move.go` and `remove.go` do exit on this.)
+4. **Deadlines are parsed and discarded.** `sanitizeTasks` validates `-t=` but `AddTodo` always writes `ExpiresAt: sql.NullTime{Valid: false}`. Nothing reads or enforces `expires_at`.
+5. **No transactions.** Copy-then-delete means state changes are not atomic across the four tables.
+6. **Session is hardcoded** to `"todo"` in every call, and the `Clear*` queries are unscoped `DELETE FROM <table>`. Any real multi-session work must also scope the destructive queries.
+7. **Argument parsing is duplicated** across `cmd/todo/*.go` wrappers (`len(args) != 3 || len(args) < 3` style redundancy) and could be consolidated into a helper. There is no flag parser and no help output.
+8. **`cmd/todo/add.go` uses `log.Panic`** for user input errors, so bad input produces stack traces; `DeadMissingWarningMessage` is a hard-coded `false`; the empty-args validation is commented out.
+9. **Migrations vs embedded schema**: runtime uses the embedded schema, `migrations/` is stale, and existing databases have no upgrade path. Pick one strategy.
+10. **No tests, linter, or typecheck config** in the repo; CI is only the GoReleaser release workflow, so it never runs the build or tests on PRs. Verification is limited to `gofmt -l`, `go vet`, and `go build -o doit ./cmd/todo`.
+11. **Checked-in database artifacts.** `.doit/doit.db` and `cmd/todo/doit.db` are tracked and `cmd/todo/todo` (a committed binary) is tracked as well, so smoke tests run from the repo root mutate committed state. Run CLI smoke tests from a clean temp directory. `todo.db` and `.DS_Store` are gitignored.
+12. **`internal/todo/service.go` is an unimported package** — delete it or implement it.
+13. **README's `go install github.com/aakku106/DoIT@latest` does not work** — the module root has no Go package. Use `go build -o doit ./cmd/todo` from a clone.
+14. **`docs/prompt.md`** is a separate short brief for AI agents; keep it in sync with this document when command behaviour changes.
 
 ## Quick mental model
 
-- CLI input -> `cmd/todo/main.go` (routing) + `cmd/todo/*.go` (arg validation)
+- CLI input -> `cmd/todo/main.go` (routing) + `cmd/todo/*.go` (arg validation, confirmations, parsing)
 - Command logic -> `internal/cli/commands.go`
 - DB query API -> `internal/store/queries.sql.go` (generated)
 - SQL truth -> `sql/queries.sql`, `sql/schema.sql`
 - DB connection/init -> `internal/db/sqlite.go`
+- Schema embed -> `sql/assects.go`
 
 ## How to run (quick)
 
@@ -154,12 +196,30 @@ go run ./cmd/todo add "wash car"
 go run ./cmd/todo list
 ```
 
+Add several tasks in one command, and permanently clear the todo list:
+
+```bash
+go run ./cmd/todo add taskA -t=2h , "task B" -t=1mo
+printf 'Y\nYeS NuKe ToDos\n' | go run ./cmd/todo nuke
+```
+
 Dev build (installs as `xdoit` to `~/go/bin/`):
 
 ```bash
 ./dev-build.sh
 ```
 
+Note: `dev-build.sh` must run from the repo root, assumes `~/go/bin` exists and is on `PATH`, and its final command masks `go build` failures — do not trust its exit status alone.
+
+## Related docs
+
+- `docs/man/doit.1` — user-facing manpage (also shipped in release archives and via Homebrew).
+- `docs/prompt.md` — short project brief for AI agents.
+- `cmd/todo/AgenticWork.md` — log of agent-assisted changes.
+- `AGENTS.md` — repo-level agent instructions; mostly still accurate, but its note that `trash nuke` / `ignored nuke` call the completed-table handler is now stale (fixed), and it does not yet mention multi-task `add` or the top-level `nuke` command.
+
 ## License
 
-GPLv3. All source files carry the license header.
+GPLv3. Most handwritten Go files carry the license header; the exceptions are the generated files under `internal/store/`, `sql/assects.go`, `cmd/todo/session.go`, and `internal/todo/service.go`.
+
+Copyright (C) 2026 Adarasha Gaihre (aakku106).
