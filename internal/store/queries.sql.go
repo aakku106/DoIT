@@ -28,6 +28,15 @@ func (q *Queries) ClearIgnored(ctx context.Context) error {
 	return err
 }
 
+const clearTodo = `-- name: ClearTodo :exec
+DELETE FROM todos
+`
+
+func (q *Queries) ClearTodo(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTodo)
+	return err
+}
+
 const clearTrash = `-- name: ClearTrash :exec
 DELETE FROM trash
 `
@@ -454,7 +463,7 @@ func (q *Queries) MoveTrashToCompleted(ctx context.Context, id int64) error {
 }
 
 const moveTrashToIgnored = `-- name: MoveTrashToIgnored :exec
-INSERT INTO completed (session,title)
+INSERT INTO ignored (session,title)
 SELECT t.session, t.title FROM trash AS t
 WHERE t.id = ?
 `

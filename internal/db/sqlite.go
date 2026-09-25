@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -11,15 +10,18 @@ import (
 	_ "github.com/ncruces/go-sqlite3/driver"
 )
 
+const DbName string = "doit.db"
+
 // NewSQLite is called by main.go for subcommands (add, list, etc.)
 // It automatically finds .doit in the current directory or parent folders.
+
 func NewSQLite() (*sql.DB, error) {
 	doitDir, err := findDoitDir()
 	if err != nil {
 		return nil, err
 	}
 
-	dbPath := filepath.Join(doitDir, "doit.db")
+	dbPath := filepath.Join(doitDir, DbName)
 	dsn := fmt.Sprintf("file:%s?_journal_mode=WAL&_foreign_keys=on", dbPath)
 
 	db, err := sql.Open("sqlite3", dsn)
@@ -58,29 +60,22 @@ func InitSQLite(doitDir string) (*sql.DB, error) {
 	return db, nil
 }
 
-// Helper function to search upwards for the .doit folder
+// Helper function to search upwards for the .doit folder (Stops at root dir)
 func findDoitDir() (string, error) {
-	fmt.Println("FIndingDIR")
 	cwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-	log.Println(cwd)
 
 	dir := cwd
-	fmt.Println("ENterign finding looooooop-----------")
 	for {
 		doitPath := filepath.Join(dir, ".doit")
-		log.Println(doitPath)
 		if info, err := os.Stat(doitPath); err == nil && info.IsDir() {
-			log.Printf("STat:%v", info)
 			return doitPath, nil
 		}
 
 		parent := filepath.Dir(dir)
-		log.Println(parent)
 		if parent == dir { // Reached system root
-			log.Println("Reached System root", parent, dir)
 			break
 		}
 		dir = parent

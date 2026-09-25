@@ -43,7 +43,7 @@ func handleTrashMove(q *store.Queries, args []string) {
 
 		}
 	} else {
-		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		fmt.Println("Run exactly: ", cli.Bold, " doit mv <t/trash> id [target]")
 		os.Exit(1)
 	}
 }
@@ -78,7 +78,7 @@ func handleComletedMove(q *store.Queries, args []string) {
 
 		}
 	} else {
-		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		fmt.Println("Run exactly: ", cli.Bold, " doit mv <c/completed> id [target]")
 		os.Exit(1)
 	}
 }
@@ -113,7 +113,7 @@ func handleIgnoredMove(q *store.Queries, args []string) {
 			}
 		}
 	} else {
-		fmt.Println("Run exactly: ", cli.Bold, " doit <t/trash> id target/Optional/")
+		fmt.Println("Run exactly: ", cli.Bold, " doit <i/ignored> id [target]")
 		os.Exit(1)
 	}
 }

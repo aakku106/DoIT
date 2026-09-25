@@ -11,7 +11,6 @@ import (
 )
 
 func AddTodo(query *store.Queries, title string) {
-	fmt.Printf("\t%s\n", title)
 	param := store.CreateTodoParams{
 		Title:     title,
 		Session:   "todo",
@@ -94,7 +93,7 @@ func DoneTodo(q *store.Queries, id int) {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit list>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -119,7 +118,7 @@ func RemoveTodo(q *store.Queries, id int) {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit list>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -144,7 +143,7 @@ func RemoveCompleted(q *store.Queries, id int, session string) {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit completed list>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <c/completed> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You haven't Completed anything YET !!", Reset)
 		os.Exit(0)
@@ -165,7 +164,7 @@ func RemoveTrash(q *store.Queries, id int, session string) {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit trash list>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <t/trash> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You haven't Removed anything YET !!", Reset)
 		os.Exit(0)
@@ -186,7 +185,7 @@ func RemoveIgnored(q *store.Queries, id int, session string) {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit trash list>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <i/ignored> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You haven't Ignored anything YET !!", Reset)
 		os.Exit(0)
@@ -207,7 +206,7 @@ func MoveTrash(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <t/trash> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -228,7 +227,7 @@ func MoveTrashToCompleted(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <t/trash> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -249,7 +248,7 @@ func MoveTrashToIgnored(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <t/trash> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -270,7 +269,7 @@ func MoveCompleted(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <c/completed> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -291,7 +290,7 @@ func MoveCompletedToTrash(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <c/completed> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -312,7 +311,7 @@ func MoveCompletedToIgnored(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <c/completed> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -333,7 +332,7 @@ func MoveIgnored(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <i/ignored> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -354,7 +353,7 @@ func MoveIgnoredToCompleted(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <i/ignored> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -375,7 +374,7 @@ func MoveIgnoredToTrash(q *store.Queries, id int) error {
 	}
 
 	if len(dbId) < id {
-		log.Fatalln(Red, "Provide correct id <use: doit c ls>", Reset)
+		log.Fatalln(Red, "Provide correct id Run exactly", Bold, " doit <i/ignored> <ls/list>", Reset)
 	} else if len(dbId) == 0 {
 		log.Println(Yellow, "You have no to do , You are all Done !!", Reset)
 		os.Exit(0)
@@ -389,6 +388,9 @@ func MoveIgnoredToTrash(q *store.Queries, id int) error {
 	return nil
 }
 
+func ClearTodos(q *store.Queries) {
+	q.ClearTodo(context.Background())
+}
 func ClearCompleted(q *store.Queries) {
 	q.ClearCompleted(context.Background())
 }

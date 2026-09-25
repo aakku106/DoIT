@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	ClearCompleted(ctx context.Context) error
 	ClearIgnored(ctx context.Context) error
+	ClearTodo(ctx context.Context) error
 	ClearTrash(ctx context.Context) error
 	CompleteTodoTransaction(ctx context.Context, id int64) error
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
