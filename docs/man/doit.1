@@ -3,7 +3,8 @@
 doit \- A sleek CLI task manager tool built with Go and WASM SQLite3
 .SH SYNOPSIS
 .B doit
-.IR command " [" options ]
+.I command
+.RI [ options ]
 .SH DESCRIPTION
 .B doit
 is a command-line todo/task manager that stores its data in a local SQLite
@@ -17,6 +18,8 @@ below). Tasks live in one of four logical lists:
 .IR trash ,
 and
 .IR ignored .
+Every list command clears the terminal screen before printing, so scrollback is
+not preserved.
 .SH INITIALIZATION
 Before using
 .B doit
@@ -28,12 +31,19 @@ This creates a
 .B .doit/
 directory containing the SQLite database
 .B doit.db
-in the current working directory. Every later
+in the current working directory, and refuses to run if
+.B .doit/
+already exists there. Every later
 .B doit
 command looks for
 .B .doit/
 by starting from the current directory and walking upward, so commands will
-only work when run inside (or below) an initialized project.
+only work when run inside (or below) an initialized project. The schema is only
+applied by
+.BR doit init ;
+later versions of
+.B doit
+do not upgrade an existing database.
 .SH COMMANDS
 .TP
 .BR init
@@ -41,8 +51,11 @@ Create a new
 .B .doit
 repository in the current directory.
 .TP
-.BR add " | " a " " \fItask\fP
-Add a new todo. Exactly one task argument is accepted.
+.BR add " | " a " " \fItask\fP " [" \fI-t=deadline\fP " ]"
+Add a new todo. With a single task argument this adds one task. With more than
+one argument it switches to multi-task mode; see
+.B ADDING TASKS
+below.
 .TP
 .BR list " | " ls
 List all active todos. Tasks are numbered starting from index 0; these
@@ -62,6 +75,20 @@ to the
 .IR trash
 list.
 .TP
+.BR nuke " | " n
+Permanently clear the entire
+.IR todos
+list, after a two-step confirmation (see
+.BR "DESTRUCTIVE COMMANDS" ).
+This is a top-level command; the
+.IR completed ,
+.IR trash ,
+and
+.I ignored
+lists are cleared through their own
+.B nuke
+subcommands.
+.TP
 .BR completed " | " c " " \fIsubcommand\fP
 Operate on the completed list. Subcommands:
 .RS
@@ -75,7 +102,7 @@ Permanently delete the task at index
 from the completed list (cannot be recovered).
 .TP
 .BR nuke " | " n
-Prompt for confirmation, then permanently clear all completed tasks.
+Permanently clear all completed tasks, after a two-step confirmation.
 .RE
 .TP
 .BR trash " | " t " " \fIsubcommand\fP
@@ -88,10 +115,12 @@ List tasks in trash.
 .BR remove " | " rm " " \fIid\fP
 Permanently delete the task at index
 .I id
-from the trash (cannot be recovered).
+from the trash (cannot be recovered). See
+.B BUGS
+for a known defect in this subcommand.
 .TP
 .BR nuke " | " n
-Prompt for confirmation, then permanently clear the entire trash.
+Permanently clear the entire trash, after a two-step confirmation.
 .RE
 .TP
 .BR ignored " | " i " " \fIsubcommand\fP
@@ -107,7 +136,7 @@ Permanently delete the task at index
 from the ignored list (cannot be recovered).
 .TP
 .BR nuke " | " n
-Prompt for confirmation, then permanently clear all ignored tasks.
+Permanently clear all ignored tasks, after a two-step confirmation.
 .RE
 .TP
 .BR move " | " mv " " \fI<t|c|i>\fP " " \fIid\fP " [" \fI<t|c|i>\fP "]"
@@ -117,7 +146,7 @@ source argument
 selects the source list (one of
 .IR trash ,
 .IR completed ,
-.IR ignored
+.I ignored
 or their single-letter aliases), and
 .I id
 is the 0-based index within that list. With no target argument, the task is
@@ -126,36 +155,165 @@ moved back to
 With an explicit target
 .I <t|c|i>
 it is moved to that list instead.
+.SH ADDING TASKS
+A single task is added by quoting it as one argument:
+.PP
+.RS
+.nf
+doit add "buy milk"
+.fi
+.RE
+.PP
+Supplying more than one argument switches
+.B add
+to multi-task mode, where tasks are separated by a
+.B comma
+that must be its own whitespace-delimited argument, i.e. surrounded by spaces
+or quoted on its own. Each task may be followed by an optional deadline
+written as
+.BR -t= ,
+for example:
+.PP
+.RS
+.nf
+doit add taskA -t=2h , "task B" -t=1mo
+.fi
+.RE
+.PP
+This adds both tasks in the order given. The separator must be surrounded by
+whitespace (or quoted on its own); a comma attached to a task is treated as
+part of that task's text and produces an error.
+.PP
+Each added task prints its
+.I database row id
+under an
+.B ID:
+heading. This is
+.I not
+the list index that
+.BR done ,
+.BR remove ,
+.BR mv ,
+and the
+.B remove
+subcommands expect; use the index shown by the list commands instead.
+.SH DESTRUCTIVE COMMANDS
+.IR remove ,
+.IR rm ,
+and the per-table
+.B remove
+subcommands prompt once and accept
+.BR y ,
+.B Y
+as confirmation and
+.BR n ,
+.B N
+as cancellation, in any case. Any other key aborts with an error.
+.PP
+Every
+.B nuke
+command uses a two-step confirmation. First a
+.B (Y/N)?
+prompt that accepts only a strict uppercase
+.BR Y ;
+.B n
+or
+.B N
+cancels, and any other input is rejected. After
+.BR Y ,
+a typed confirmation phrase is required. The phrases are case-sensitive and
+must be entered exactly:
+.TP
+.B doit nuke
+YeS NuKe ToDos
+.TP
+.B doit completed nuke
+YeS NuKe CoMpleteD
+.TP
+.B doit trash nuke
+YeS NuKe TrAsH
+.TP
+.B doit ignored nuke
+YeS NuKe IgNoreD
 .SH DBPATH
 By default
 .B doit
 writes its database to
 .B .doit/doit.db
-relative to the directory where
-.B doit init
-was run. The connection is opened with WAL journal mode and foreign keys
+relative to the nearest ancestor directory that contains
+.BR .doit/ .
+The connection is opened with WAL journal mode and foreign keys
 enabled.
 .SH EXAMPLES
-.PP
 .nf
 .RS
 doit init
 doit add "buy milk"
+doit add "call mom"
+doit add taskA -t=2h , "task B" -t=1mo   # add two tasks at once
 doit list
 doit d 0            # mark the first listed todo done
 doit c list         # show completed tasks
 doit t list         # show trashed tasks
 doit mv t 0 c       # move the first trashed task to completed
+doit nuke           # permanently clear the todo list
 .fi
 .RE
+.SH EXIT STATUS
+.B doit
+exits 0 on success. It exits 1 on usage errors, invalid confirmation input,
+and out-of-range list indices, and 2 on a Go panic (see
+.BR BUGS ).
 .SH FILES
 .TP
 .B .doit/doit.db
 The SQLite database created by
 .BR "doit init" .
 .SH BUGS
-Multi-session support is not yet fully active; the runtime session is hardcoded to
-.IR todo .
+The following defects are present in this release:
+.TP
+.B trash remove deletes from the wrong list
+.B doit t rm <id>
+operates on the
+.I completed
+table instead of the
+.I trash
+table, so it reports success while the task stays in the trash.
+.TP
+.B Off-by-one index bounds checking
+Index validation rejects indices greater than the list length but accepts an
+index equal to it, which can panic with an out-of-range error or act on an
+unrelated row.
+.TP
+.B Non-numeric ids are accepted by done
+.B doit d <id>
+warns about an unparsable id but does not abort, so it then operates on index 0
+and exits 0.
+.TP
+.B Deadlines are parsed but not stored
+The
+.B -t=
+value in
+.B add
+is validated and then discarded; no
+.B expires_at
+value is written and no expiration is enforced.
+.TP
+.B add with no task silently succeeds
+Running
+.B doit add
+with no task argument prints nothing and exits 0.
+.TP
+.B Malformed multi-task input panics
+A leading or trailing comma, or a second task argument that is not prefixed
+with
+.BR -t= ,
+aborts with a Go panic and a stack trace instead of a clean error message.
+.TP
+.B Multi-session support is not yet fully active
+The runtime session is hardcoded to
+.IR todo ,
+and the session subcommand is an unimplemented placeholder.
 .SH AUTHOR
 Adarasha Gaihre (aakku) <aakku@adarashagaihre.com.np>
 .SH HOME
