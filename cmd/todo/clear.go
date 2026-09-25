@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"unicode"
 
 	"github.com/aakku106/DoIT/internal/cli"
 	"github.com/aakku106/DoIT/internal/store"
 )
 
-// TODO: Fix logic here
 func clearTodo(q *store.Queries) {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -59,67 +57,143 @@ func clearTodo(q *store.Queries) {
 	}
 }
 
-// TODO: Need to do same fro all other tables like todos table for nuke to work
-
 func clearCompleted(q *store.Queries) {
-	fmt.Println(cli.Red, "___This Clear all Tasks From Completed list, Task Cannot be Retrived Again !!!___", cli.Reset)
-	fmt.Println(cli.Red, "---Are you sure You want To Clear Completed :", cli.Reset, "Y/N")
-	var a rune
-	fmt.Scanf("%c", &a)
-	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
-	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
-		var b string
-		fmt.Scanf("%s", &b)
-		if b == "YeS_NuKe" {
-			cli.ClearCompleted(q)
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println(cli.Red, "___This clears all tasks from Completed list. Tasks CANNOT be retrieved again!___", cli.Reset)
+	fmt.Print(cli.Red, "---Are you sure you want to clear Completed (Y/N)? ", cli.Reset)
+
+	// Read first input line
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	if len(input) == 0 {
+		fmt.Println("Invalid selection.")
+		return
+	}
+
+	// 'n' or 'N' cancels the operation
+	if strings.ToLower(input) == "n" {
+		fmt.Println("Operation cancelled.")
+		return
+	} else if input == "Y" { // Strictly checks for uppercase 'Y'
+		fmt.Println(cli.Red, "CONFIRM CLEARING COMPLETED LIST:", cli.Reset, "Type 'YeS NuKe CoMpleteD' to confirm:")
+
+		// Read second input line (with spaces)
+		confirmInput, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading confirmation:", err)
+			return
 		}
+
+		confirmInput = strings.TrimSpace(confirmInput)
+
+		if confirmInput == "YeS NuKe CoMpleteD" {
+			cli.ClearCompleted(q)
+			fmt.Println("Completed list successfully cleared!")
+			return
+		}
+
 		fmt.Println("CLEARING COMPLETED LIST ABORTED !!!")
 	} else {
-		fmt.Println("You were supposed to select between Y and N")
-		os.Exit(1)
+		fmt.Println("You were supposed to select between uppercase 'Y' and 'N'/'n'")
 	}
 }
 
 func clearTrash(q *store.Queries) {
-	fmt.Println(cli.Red, "___This Clear all Tasks From Trash list, Task Cannot be Retrived Again !!!___", cli.Reset)
-	fmt.Println(cli.Red, "---Are you sure You want To Clear Trash :", cli.Reset, "Y/N")
-	var a rune
-	fmt.Scanf("%c", &a)
-	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
-	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
-		var b string
-		fmt.Scanf("%s", &b)
-		if b == "YeS_NuKe" {
-			cli.ClearCompleted(q)
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println(cli.Red, "___This clears all tasks from Trash list. Tasks CANNOT be retrieved again!___", cli.Reset)
+	fmt.Print(cli.Red, "---Are you sure you want to clear Trash (Y/N)? ", cli.Reset)
+
+	// Read first input line
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	if len(input) == 0 {
+		fmt.Println("Invalid selection.")
+		return
+	}
+
+	// 'n' or 'N' cancels the operation
+	if strings.ToLower(input) == "n" {
+		fmt.Println("Operation cancelled.")
+		return
+	} else if input == "Y" { // Strictly checks for uppercase 'Y'
+		fmt.Println(cli.Red, "CONFIRM CLEARING TRASH LIST:", cli.Reset, "Type 'YeS NuKe TrAsH' to confirm:")
+
+		// Read second input line (with spaces)
+		confirmInput, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading confirmation:", err)
+			return
 		}
+
+		confirmInput = strings.TrimSpace(confirmInput)
+
+		if confirmInput == "YeS NuKe TrAsH" {
+			cli.ClearTrash(q)
+			fmt.Println("Trash list successfully cleared!")
+			return
+		}
+
 		fmt.Println("CLEARING TRASH LIST ABORTED !!!")
 	} else {
-		fmt.Println("You were supposed to select between Y and N")
-		os.Exit(1)
+		fmt.Println("You were supposed to select between uppercase 'Y' and 'N'/'n'")
 	}
 }
 
 func clearIgnored(q *store.Queries) {
-	fmt.Println(cli.Red, "___This Clear all Tasks From Ignored list, Task Cannot be Retrived Again !!!___", cli.Reset)
-	fmt.Println(cli.Red, "---Are you sure You want To Clear Ignored :", cli.Reset, "Y/N")
-	var a rune
-	fmt.Scanf("%c", &a)
-	if unicode.ToLower(a) == 'n' {
-		os.Exit(0)
-	} else if a == 'Y' {
-		fmt.Println(cli.Red, "CONFIRN CLEARING TODO LIST:", cli.Reset, "YeS_NuKe / N")
-		var b string
-		fmt.Scanf("%s", &b)
-		if b == "YeS_NuKe" {
-			cli.ClearCompleted(q)
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println(cli.Red, "___This clears all tasks from Ignored list. Tasks CANNOT be retrieved again!___", cli.Reset)
+	fmt.Print(cli.Red, "---Are you sure you want to clear Ignored (Y/N)? ", cli.Reset)
+
+	// Read first input line
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	if len(input) == 0 {
+		fmt.Println("Invalid selection.")
+		return
+	}
+
+	// 'n' or 'N' cancels the operation
+	if strings.ToLower(input) == "n" {
+		fmt.Println("Operation cancelled.")
+		return
+	} else if input == "Y" { // Strictly checks for uppercase 'Y'
+		fmt.Println(cli.Red, "CONFIRM CLEARING IGNORED LIST:", cli.Reset, "Type 'YeS NuKe IgNoreD' to confirm:")
+
+		// Read second input line (with spaces)
+		confirmInput, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading confirmation:", err)
+			return
 		}
+
+		confirmInput = strings.TrimSpace(confirmInput)
+
+		if confirmInput == "YeS NuKe IgNoreD" {
+			cli.ClearIgnored(q)
+			fmt.Println("Ignored list successfully cleared!")
+			return
+		}
+
 		fmt.Println("CLEARING IGNORED LIST ABORTED !!!")
 	} else {
-		fmt.Println("You were supposed to select between Y and N")
-		os.Exit(1)
+		fmt.Println("You were supposed to select between uppercase 'Y' and 'N'/'n'")
 	}
 }
