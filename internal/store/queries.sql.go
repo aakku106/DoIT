@@ -28,6 +28,15 @@ func (q *Queries) ClearIgnored(ctx context.Context) error {
 	return err
 }
 
+const clearTodo = `-- name: ClearTodo :exec
+DELETE FROM todos
+`
+
+func (q *Queries) ClearTodo(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTodo)
+	return err
+}
+
 const clearTrash = `-- name: ClearTrash :exec
 DELETE FROM trash
 `

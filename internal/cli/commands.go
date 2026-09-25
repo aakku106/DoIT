@@ -11,7 +11,6 @@ import (
 )
 
 func AddTodo(query *store.Queries, title string) {
-	fmt.Printf("\t%s\n", title)
 	param := store.CreateTodoParams{
 		Title:     title,
 		Session:   "todo",
@@ -389,6 +388,9 @@ func MoveIgnoredToTrash(q *store.Queries, id int) error {
 	return nil
 }
 
+func ClearTodos(q *store.Queries) {
+	q.ClearTodo(context.Background())
+}
 func ClearCompleted(q *store.Queries) {
 	q.ClearCompleted(context.Background())
 }

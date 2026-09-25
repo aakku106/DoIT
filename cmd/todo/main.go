@@ -46,32 +46,35 @@ func main() {
 	query := store.New(db)
 
 	switch args[1] {
-	case "add", "a":
+	case "add", "a": // command
 
 		add(query, args)
 
-	case "list", "ls":
+	case "list", "ls": // command
 		listTodo(query, args)
 
-	case "done", "d":
+	case "done", "d": // command
 		doneTodo(query, args)
 
-	case "remove", "rm":
+	case "remove", "rm": // command
 		removeTodo(query, args)
 
-	case "completed", "c":
+	case "nuke", "n": //command
+		clearTodo(query)
+
+	case "completed", "c": // This is table
 		if len(args) < 3 {
 			fmt.Println("Umm Wot Broo !! run, doit <c/completed> [<ls/list> | <rm/remove> | <n/nuke>] ")
 			os.Exit(1)
 		}
 		switch args[2] {
-		case "list", "ls":
+		case "list", "ls": // command
 			listCompleted(query, args)
 
-		case "remove", "rm":
+		case "remove", "rm": // command
 			removeCompleted(query, args)
 
-		case "nuke", "n":
+		case "nuke", "n": // command
 			clearCompleted(query)
 
 		default:
@@ -79,19 +82,19 @@ func main() {
 			os.Exit(1)
 		}
 
-	case "trash", "t":
+	case "trash", "t": // Thsi is table
 		if len(args) < 3 {
 			fmt.Println("Umm WOt Broo !! run, doit <t/trash> [<ls/list> | <rm/remove> | <n/nuke>] ")
 			os.Exit(1)
 		}
 		switch args[2] {
-		case "list", "ls":
+		case "list", "ls": // command
 			listTrash(query, args)
 
-		case "remove", "rm":
+		case "remove", "rm": // command
 			removeTrash(query, args)
 
-		case "nuke", "n":
+		case "nuke", "n": // command
 			clearTrash(query)
 
 		default:
@@ -99,19 +102,19 @@ func main() {
 			os.Exit(1)
 		}
 
-	case "ignored", "i":
+	case "ignored", "i": // This is table
 		if len(args) < 3 {
 			fmt.Println("Umm WOt Broo !! run, doit <i/ignored> [<ls/list> | <rm/remove> | <n/nuke>] ")
 			os.Exit(1)
 		}
 		switch args[2] {
-		case "list", "ls":
+		case "list", "ls": // command
 			listIgnored(query, args)
 
-		case "remove", "rm":
+		case "remove", "rm": // command
 			removeIgnored(query, args)
 
-		case "nuke", "n":
+		case "nuke", "n": // command
 			clearIgnored(query)
 
 		default:
@@ -119,7 +122,7 @@ func main() {
 			os.Exit(1)
 		}
 
-	case "move", "mv":
+	case "move", "mv": // Command
 
 		if len(args) < 4 {
 			fmt.Println("Umm Wot Broo !! run, doit <mv/move> [<t/trash> | <i/ignored> | <c/completed>] id  [<t/trash> | <i/ignored> | <c/completed>]")
@@ -127,11 +130,11 @@ func main() {
 		}
 
 		switch args[2] {
-		case "trash", "t":
+		case "trash", "t": // Table
 			handleTrashMove(query, args)
-		case "completed", "c":
+		case "completed", "c": // Table
 			handleComletedMove(query, args)
-		case "ignored", "i":
+		case "ignored", "i": // Table
 			handleIgnoredMove(query, args)
 		default:
 			fmt.Println(cli.Cyan, "move commad only work for trash,ignored,completed tables", cli.Reset)
